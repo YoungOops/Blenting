@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+//프로바이더 -> 프리즈마가 쓸 데이터베이스 유형임 // url: 데이터베이스를 연결하기 위한 URL
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  userId Int @id @default(autoincrement()) @map("userId")
+
+  email    String @unique @map("email")
+  password String @map("password")
+  name     String @map("name")
+
+  gender   gender    @map("gender")
+  height   height?   @map("height")
+  physique physique? @map("physique")
+
+  district    String? @map("district")
+  description String? @map("description") @db.Text
+  nickName    String? @map("nickName")
+  mbti        String? @map("mbti")
+  age         Int?    @map("age")
+
+  //현재 시각을 기본값으로
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+
+  // 현재 테이블이 해당 테이블과 1:N 관계를 맺습니다.
+  // Comments  Comments[]
+  // Answers   Answers[]
+  // Questions Questions[]
+
+  @@map("Users")
+}
+
+model GroupMembers {
+  groupMemberId Int @id @default(autoincrement()) @map("gmId")
+  userId        Int @map("userId")
+  groupId       Int @map("groupId")
+
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+
+  Users  Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  Groups Groups[]
+
+  @@map("GroupMembers")
+}
+
+model GroupMessages {
+  groupMessageId Int @id @default(autoincrement()) @map("groupMessageId")
+  userId         Int @map("userId")
+  groupMemberId  Int @map("groupMemberId")
+  groupMeetingId Int @map("groupMeetingId")
+
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+
+  Users          Users          @relation(fields: [userId], references: [groupMessageId], onDelete: Cascade)
+  groupMemberId  groupMemberId  @relation(fields: [groupMemberId], references: [groupMessageId], onDelete: Cascade)
+  groupMeetingId groupMeetingId @relation(fields: [groupMeetingId], references: [groupMessageId], onDelete: Cascade)
+
+  @@map("GroupMessages")
+}
+
+// model Answers {
+//   answerId   Int @id @default(autoincrement()) @map("answerId")
+//   userId     Int @map("userId")
+//   questionId Int @map("questionId")
+
+//   nick    String @map("nick")
+//   title   String @map("title") @db.Text
+//   content String @map("content") @db.Text
+
+//   createdAt DateTime @default(now()) @map("createdAt")
+//   updatedAt DateTime @updatedAt @map("updatedAt")
+
+//   Comments  Comments[]
+//   Users     Users      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+//   Questions Questions  @relation(fields: [questionId], references: [questionId], onDelete: Cascade)
+
+//   @@map("Answers")
+// }
+
+// model Comments {
+//   commentId Int @id @default(autoincrement()) @map("commentId")
+//   userId    Int @map("userId")
+//   answerId  Int @map("answerId")
+
+//   nick    String @map("nick")
+//   content String @map("content") @db.Text
+
+//   createdAt DateTime @default(now()) @map("createdAt")
+//   updatedAt DateTime @updatedAt @map("updatedAt")
+
+//   Users   Users   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+//   Answers Answers @relation(fields: [answerId], references: [answerId], onDelete: Cascade)
+
+//   @@map("Comments")
+// }
