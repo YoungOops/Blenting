@@ -8,132 +8,170 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  userId Int @id @default(autoincrement()) @map("userId")
-
+// 1:1 의 관계의 경우 서로의 외래키를 갖고 있으면 순환참조로 인해 모델 생성이나 삭제 시 순환적 종속성 때문에 문제 발생
+model Auths {
+  id       Int    @id @default(autoincrement()) @map("id")
   email    String @unique @map("email")
   password String @map("password")
-  name     String @map("name")
 
-  gender   gender    @map("gender")
-  height   height?   @map("height")
-  figure   figure?   @map("figure")
+  // 현재 테이블이 해당 테이블과 1:1 관계를 맺습니다.
+  Users Users?
+
+  @@map("auths")
+}
+
+enum gender {
+  MALE
+  FEMALE
+}
+
+enum height {
+  CASE1
+  CASE2
+  CASE3
+  CASE4
+  CASE5
+}
+
+enum figure {
+  SLIM
+  MEDIUM
+  PLMUP
+  MUSCULAR
+}
+
+enum want1 {
+  HEIGHT
+  FIGURE
+  MBTI
+  HOBBY
+  JOB
+  AGE
+  DISTRICT
+}
+
+enum want2 {
+  HEIGHT
+  FIGURE
+  MBTI
+  HOBBY
+  JOB
+  AGE
+  DISTRICT
+}
+
+enum want3 {
+  HEIGHT
+  FIGURE
+  MBTI
+  HOBBY
+  JOB
+  AGE
+  DISTRICT
+}
+
+// 1:1 관계 시 authId는 @unique 설정
+model Users {
+  id Int @id @default(autoincrement()) @map("id")
+  authId Int @unique
+
+  gender gender  @map("gender")
+  height height? @map("height")
+  figure figure? @map("figure")
+  want1  want1?  @map("wnat1")
+  want2  want2?  @map("wnat2")
+  want3  want3?  @map("wnat3")
 
   district    String? @map("district")
   description String? @map("description") @db.Text
-  nickName    String? @map("nickName")
+  nickName    String? @map("nick_name")
   mbti        String? @map("mbti")
+  hobby       String? @map("hobby")
+  job         String? @map("job")
   age         Int?    @map("age")
-  reportCount Int     @default(0)   @map("report_count")
-  reportPoint Int     @default(0)   @map("reportPoint")
-  ticket      Int     @default(3)    @map("ticket")
+  reportCount Int     @default(0) @map("report_count")
+  reportPoint Int     @default(0) @map("report_point")
+  ticket      Int     @default(3) @map("ticket")
 
   //현재 시각을 기본값으로
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 현재 테이블이 해당 테이블과 1:1 관계를 맺습니다.
+  Auths Auths @relation(fields: [authId], references: [id])
 
   // 현재 테이블이 해당 테이블과 1:N 관계를 맺습니다.
-  GroupMessages   GroupMessages[]
-  CoupleMessage   CoupleMessage[]
-
-  GroupMeetings   GroupMeetings  @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  CoupleMeetings  CoupleMeetings @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  Messages Messages[]
+  Members  Members[]
 
   @@map("users")
 }
 
-enum gender{
-  male
-  female
+enum type {
+  GROUP
+  COUPLE
 }
 
-enum height{
-  ~155
-  155~160
-  160~165
-  165~170
-  170~175
-  175~
+model Meetings {
+  id   Int  @id @default(autoincrement()) @map("id")
+  type type @default(GROUP) @map("type")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Members  Members[]
+  Messages Messages[]
+
+  @@map("group_meetings")
 }
 
-enum figure{
-  slim
-  medium
-  plmup
-  muscular
+model Members {
+  id        Int @id @default(autoincrement()) @map("id")
+  userId    Int @map("user_id")
+  meetingId Int @map("meeting_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Users    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Meetings Meetings @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@map("members")
 }
 
-model GroupMeetings {
-  groupMeetingId Int @id @default(autoincrement()) @map("groupMeetingId")
-  userId        Int @map("userId")
-  groupMessageId int @map("groupMessageId")
+model Messages {
+  id          Int    @id @default(autoincrement()) @map("id")
+  description String @map("description") @db.Text
+  userId      Int    @map("user_id")
+  meetingId   Int    @map("meeting_id")
 
-  createdAt DateTime @default(ow()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  Users          Users[]
-  GroupMessages  GroupMessages[]
+  Users    Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Meetings Meetings @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
-  @@map("GroupMeetings")
+  @@map("messages")
 }
 
+model Questions {
+  id          Int    @id @default(autoincrement()) @map("id")
+  description String @map("description") @db.Text
 
-//model GroupMembers {
-  groupMemberId Int @id @default(autoincrement()) @map("gmId")
-  userId        Int @map("userId")
-  groupId       Int @map("groupId")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
-
-  Users  Users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  GroupMeetings GroupMeetings[]
-
-  @@map("GroupMembers")
+  @@map("questions")
 }
 
-model GroupMessages {
-  groupMessageId Int @id @default(autoincrement()) @map("groupMessageId")
-  description    String @map("description") @db.Text
-  userId         Int @map("userId")
-  groupMemberId  Int @map("groupMemberId")
-  groupMeetingId Int @map("groupMeetingId")
+model Payments {
+  id          Int    @id @default(autoincrement()) @map("id")
+  packageName String @map("package_name")
+  ticketCount Int    @map("ticket_count")
+  price       Int    @map("price")
 
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  Users          Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  //GroupMembers   GroupMembers  @relation(fields: [groupMemberId], references: [groupMessageId], onDelete: Cascade)
-  //GroupMeetings GroupMeetings @relation(fields: [groupMeetingId], references: [groupMeetingId], onDelete: Cascade)
-
-  @@map("GroupMessages")
+  @@map("payments")
 }
-
- model CoupleMeetings {
-   coupleMeetingId   Int @id @default(autoincrement()) @map("coupleMeetingId")
-   userId     Int @map("userId")
-   coupleMessageId Int @map("coupleMessageId")
-
-   createdAt DateTime @default(now()) @map("createdAt")
-   updatedAt DateTime @updatedAt @map("updatedAt")
-
-   Users  Users[]
-   CoupleMessages  CoupleMessages[]
-
-   @@map("CoupleMeetings")
- }
-
- model CoupleMessages {
-   coupleMessageId Int @id @default(autoincrement()) @map("coupleMessageId")
-   description    String @map("description") @db.Text
-   userId    Int @map("userId")
-   coupleMeetingId  Int @map("coupleMeetingId")
-
-   createdAt DateTime @default(now()) @map("createdAt")
-   updatedAt DateTime @updatedAt @map("updatedAt")
-
-   Users           Users          @relation(fields: [userId], references: [userId], onDelete: Cascade)
-   //CoupleMeetings  CoupleMeetings @relation(fields: [coupleMeetingId], references: [coupleMeetingId], onDelete: Cascade)
-
-   @@map("CoupleMessages")
- }
