@@ -1,7 +1,7 @@
 // src/app.js
 
 import express from 'express';
-import router from './routes/index.js';
+import {apiRouter} from './routes/index.js';
 import cookieParser from 'cookie-parser';
 // cookie-parse 모듈은 요청된 쿠키를 쉽게 사용할 수 있도록 도와주는 모듈이당
 
@@ -14,7 +14,7 @@ const PORT = 3000;
 
 //app.use 얘네가 다 미들웨어임 전역미들웨어 등록 되는 거임.
 app.use(express.json());
-app.use('/api', router);
+app.use('/api', apiRouter);
 app.use(cookieParser());
 
 app.use(LogMiddleware);
