@@ -42,7 +42,7 @@ export class MeetingsService {
   deleteMeeting = async (id) => {
     const meeting = await this.meetingsRepository.findMeetingById(id);
 
-    if (!meeting) throw new Error('리스트가 존재하지 않습니다.');
+    if (!meeting) throw new Error('미팅방이 존재하지 않습니다.');
 
     await this.meetingsRepository.deleteMeeting(id);
 
