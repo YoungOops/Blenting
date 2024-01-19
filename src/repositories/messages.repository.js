@@ -4,12 +4,12 @@ import { prisma } from '../utils/prisma/index.js';
 export class MessagesRepository {
   // 메세지 생성
   createMessage = async (meeting_id, description) => {
-
+console.log("repository id 확인", meeting_id)
     const newMessage = await prisma.messages.create({
       data: {
-        users: { connect: { id: 3 } }, // 유저 3과 연결 (인증미들웨어가 있을 시 수정)
-        meetings: {connect: {id: +meeting_id}},
-        meeting_id: +id,
+        Users: { connect: { id: 3 } }, // 유저 3과 연결 (인증미들웨어가 있을 시 수정)
+        Meetings: {connect: {id: +meeting_id}},
+        //meeting_id: +meeting_id, meeting_id를 메세지 생성 시 직접 값을 넣어주려 했으나 prisma는 스키마에서 관계를 설정해서 값을 넣어줌 (더 찾아보기)
         description,
       },
     });
@@ -17,22 +17,15 @@ export class MessagesRepository {
     return newMessage;
   };
 
-  // 리스트 조회
-  getAllLists = async (boardId) => {
-    const allLists = await prisma.messages.findAll({
-      attributes: ['listName'],
-      order: [['listOrder']], // listOrder로 
-      include: [{ model: Card, as: 'cards', attributes: ['title'], }],
+  // 메세지 조회
+  getAllMessages = async (meeting_id) => {
+    const allMessages = await prisma.messages.findMany({
       where: {
-        boardId
+        meetingId: +meeting_id,
       },
     });
-    return allLists;
+    return allMessages;
   }
-
-  // static async getListById(listId) {
-  //   return db.List.findByPk(listId);
-  // }
 
 
   //  채팅방 존재 유무 확인 (채팅방 삭제)
@@ -47,6 +40,19 @@ export class MessagesRepository {
     });
 
     return meeting;
+  };
+
+  //  메세지 존재 유무 확인 (메세지 삭제)
+  findMessageById = async (id) => {
+    const message = await prisma.messages.findUnique({
+      where: {
+        id: +id,
+      },
+      select: {
+        id: true,
+      }
+    });
+    return message;
   };
 
   // 리스트 수정
@@ -65,58 +71,13 @@ export class MessagesRepository {
     return list;
   }
 
-  // 리스트 이동
-  moveList = async (boardId, listId, listOrder) => {
-
-    // // 현재 보드의 리스트 findAll
-    // const allLists = await db.List.findAll({
-    //   where: { boardId }
-    // });
-
-    // // 리스트 이동 실행 조건 (map)
-    // // 리스트가 2개 이상일떄
-    // if (allLists.length >= 2) {
-
-    //   //1. 맨 엎으로 이동 할 경우 가장 작은 listOrder의 값에 2로 나누어 수정
-    //   // 가장 작은 리스트의 listOrder 찾기
-    //   const minListOrder = Math.min(...allLists.map(list => list.listOrder));
-
-    //   listOrder = minListOrder / 2;
-
-    //   const moveListForefront = await db.List.update(
-    //     {
-    //       listOrder,
-    //     },
-    //     {
-    //       where: {
-    //         listId: +listId,
-    //       }
-    //     }
-    //   )
-
-    //   return moveListForefront;
-    // }
-
-
-    const moveList = await db.List.update(
-      {
-        listOrder,
-      },
-      {
-        where: {
-          listId: +listId,
-        }
-      }
-    )
-
-    return moveList;
-
-  };
+ 
 
   // 리스트 삭제
-  deleteMeeting = async (id) => {
-    const meeting = await prisma.messages.delete({ where: { id: +id } })
-
-    return meeting;
+  deleteMessage = async (id) => {
+    console.log("레포지 아이디 확인" ,id)
+    const message = await prisma.messages.delete({ where: { id: +id } })
+    console.log("repository 메세지 삭제 확인", message)
+    return message;
   }
 }

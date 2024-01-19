@@ -11,12 +11,12 @@ messagesRouter.post('/:meeting_id', messagesController.createMessage);
 
 
 // 조회
-//meetingsRouter.get('/', meetingsController.getAllMeetings);
+messagesRouter.get('/:meeting_id', messagesController.getAllMessages);
 
 
 
 //삭제
-messagesRouter.delete('/:id', messagesController.deleteMeeting);
+messagesRouter.delete('/:meeting_id/:id', messagesController.deleteMessage);
 
 
 export { messagesRouter };

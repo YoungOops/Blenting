@@ -6,47 +6,49 @@ export class MessagesService {
 
   // 메세지 생성
   createMessage = async (meeting_id, description) => {
+    console.log("service id 확인", meeting_id)
     const newMessage = await this.messagesRepository.createMessage(meeting_id, description);
     return newMessage;
   };
 
-  // 리스트 조회
-  getAllLists = async (boardId) => {
-    const allLists = await this.messagesRepository.getAllLists(boardId);
+  // 메세지 조회
+  getAllMessages = async (meeting_id) => {
+    const allMessages = await this.messagesRepository.getAllMessages(meeting_id);
 
-    return allLists;
+    return allMessages;
   }
 
   // getListById = async (listId) => {
   //   return listsRepository.getListById(listId);
   // }
 
-  // 리스트 수정
-  updateListName = async (listId, listName) => {
-    const list = await this.messagesRepository.findListById(listId);
+  // // 리스트 수정
+  // updateListName = async (listId, listName) => {
+  //   const list = await this.messagesRepository.findListById(listId);
 
-    if (!list) throw new Error('리스트가 존재하지 않습니다.');
+  //   if (!list) throw new Error('리스트가 존재하지 않습니다.');
 
-    await this.messagesRepository.updateListName(listId, listName);
+  //   await this.messagesRepository.updateListName(listId, listName);
 
-    const updatedList = await this.messagesRepository.findListById(listId);
+  //   const updatedList = await this.messagesRepository.findListById(listId);
 
-    return {
-      listId: updatedList.listId,
-      listName: updatedList.listName,
-    };
-  }
+  //   return {
+  //     listId: updatedList.listId,
+  //     listName: updatedList.listName,
+  //   };
+  // }
 
 
-  // 리스트 삭제
-  deleteMeeting = async (id) => {
-    const meeting = await this.messagesRepository.findMeetingById(id);
+  // 메세지 삭제
+  deleteMessage = async (id) => {
+    console.log("서비스아이디 확인", id);
+    const message = await this.messagesRepository.findMessageById(id);
+    console.log("서비스 메세지 삭제 아이디 확인", message)
+    if (!message) throw new Error('메세지가 존재하지 않습니다.');
 
-    if (!meeting) throw new Error('리스트가 존재하지 않습니다.');
+    const deletedMessage = await this.messagesRepository.deleteMessage(id);
 
-    await this.messagesRepository.deleteMeeting(id);
-
-    return meeting;
+    return deletedMessage;
   }
 
 }

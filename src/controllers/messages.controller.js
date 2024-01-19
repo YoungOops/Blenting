@@ -18,7 +18,10 @@ export class MessagesController {
 
             return res.status(201).json({
                 message: '메세지 생성',
-                newMessage
+                data: {
+                    newMessage,
+                },
+
             });
         } catch (err) {
             //next(err);
@@ -28,34 +31,21 @@ export class MessagesController {
     }
 
     // 메세지 조회
-    getAllLists = async (req, res, next) => {
+    getAllMessages = async (req, res) => {
         try {
-            const { boardId } = req.params;
-            const allLists = await this.messagesService.getAllLists(boardId);
+            const { meeting_id } = req.params;
+            const allMessages = await this.messagesService.getAllMessages(meeting_id);
             return res.status(200).json({
-                message: '리스트 조회 성공',
-                data: allLists,
+                message: '메세지 조회 성공',
+                data: allMessages,
             });
 
         } catch (err) {
-            next(err);
+            console.log("컨트롤러 에러", err)
+        res.status(500).json({message: '알수없는 에러'});
         }
     }
 
-
-    //   static async getListById(req, res) {
-    //     const { listId } = req.params;
-    //     try {
-    //       const list = await ListService.getListById(listId);
-    //       if (list) {
-    //         res.status(200).json(list);
-    //       } else {
-    //         res.status(404).json({ message: 'List not found' });
-    //       }
-    //     } catch (error) {
-    //       res.status(500).json({ error: error.message });
-    //     }
-    //   }
 
     // 리스트 수정
     updateListName = async (req, res) => {
@@ -84,18 +74,24 @@ export class MessagesController {
 
 
     // 메세지 삭제
-    deleteMeeting = async (req, res) => {
-        const { id } = req.params;
+    deleteMessage = async (req, res) => {
+        const { meeting_id, id } = req.params;
         try {
+            const existMeeting = await this.messagesRepository.findMeetingById(meeting_id);
+            if (!existMeeting) res.status(500).json({ message: "채팅방이 없습니다" });
 
-            const deleteMeeting = await this.messagesService.deleteMeeting(id);
+            // const existMessage = await this.messagesRepository.findMessageById(id);
+            // if (!existMessage) throw new Error("메세지가 없습니다");
+
+            const deleteMeeting = await this.messagesService.deleteMessage(id);
 
             res.status(200).json({
-                message: '채팅방 삭제 성공',
+                message: '메세지 삭제 성공',
                 data: deleteMeeting,
             })
         } catch (err) {
             //next(err);
+            console.log("에러확인" , err)
             res.status(500).json({ err: err.message });
         }
     }
