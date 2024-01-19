@@ -3,20 +3,32 @@ import { MeetingsService } from "../services/meetings.service.js";
 export class MeetingsController {
     meetingsService = new MeetingsService();
 
+    static meetingId = 0;
+    static setTimeoutSetting = 5000;
     // 채팅방 생성
     createMeeting = async (req, res) => {
         try {
             const newMeeting = await this.meetingsService.createMeeting();
 
-            return res.status(201).json({
-                message: '채팅방이 생성 되었습니다.',
-                newMeeting
+            MeetingsController.meetingId = newMeeting.id;
+
+
+
+            setTimeout(() => {
+                this.deleteMeeting(MeetingsController.meetingId, res);
+            }, MeetingsController.setTimeoutSetting);
+
+// 리턴을 안하면 undefinded를 반환, 프론트는 응답한 json을 갖고 작업
+            /*return*/ res.status(201).json({
+                message: `채팅방이 생성 되었습니다. ${MeetingsController.setTimeoutSetting/1000}초 후 삭제 됩니다.`,
+                newMeeting,
+                meetingId: MeetingsController.meetingId
             });
         } catch (err) {
             //next(err);
             res.status(500).json({ err: err.message })
         }
-    }
+    } // 응답이 2번 이상 되고 있음 확인해야함
 
     // 리스트 조회
     getAllLists = async (req, res, next) => {
@@ -75,19 +87,19 @@ export class MeetingsController {
 
 
     // 리스트 삭제
-    deleteMeeting = async (req, res) => {
-        const { id } = req.params;
+    deleteMeeting = async (id, res) => {
+        //const { id } = req.parmas;
         try {
 
             const deleteMeeting = await this.meetingsService.deleteMeeting(id);
 
-            res.status(200).json({
-                message: '채팅방 삭제 성공',
-                data: deleteMeeting,
-            })
+            // res.status(200).json({
+            //     message: '채팅방 삭제 성공',
+            //     data: deleteMeeting,
+            // })
         } catch (err) {
             //next(err);
-            res.status(500).json({ err: err.message });
+            //res.status(500).json({ err: err.message });
         }
     }
 }
