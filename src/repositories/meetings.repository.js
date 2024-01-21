@@ -12,6 +12,17 @@ export class MeetingsRepository {
     return newMeeting;
   };
 
+  // 질문,지령,주제 생성 
+  createQuestion = async (question) => {
+    const createQuestion = await prisma.questions.create({
+      data: {
+        description: question
+      }
+    })
+
+    return createQuestion;
+  }
+
   // 리스트 조회
   getAllLists = async (boardId) => {
     const allLists = await prisma.meetings.findAll({
@@ -38,6 +49,7 @@ export class MeetingsRepository {
       },
       select: {
         id: true,
+        type: true,
       }
     });
 
