@@ -1,10 +1,24 @@
 import { MeetingsService } from "../services/meetings.service.js";
+import cron from 'node-cron';
 //import { errorMiddleware } from "../../middlewares/errorMiddleware.js";
 export class MeetingsController {
     meetingsService = new MeetingsService();
 
     static meetingId = 0; // 필요 엾을듯?
     static setTimeoutSetting = 5000;
+
+    // static runCronSchedule = () => {
+
+    //     cron.schedule = ('0-59 * * * * *', async () => {
+    //         try {
+                
+    //         } catch(err) {
+    //             console.log(err);
+    //         }
+    //     })
+
+    // }
+
     // 채팅방 생성
     createMeeting = async (req, res) => {
         try {
@@ -13,10 +27,14 @@ export class MeetingsController {
             MeetingsController.meetingId = newMeeting.id;
 
 
-            // 일정 시간 경과 후 미팅방 삭제
-            setTimeout(() => {
-                this.autoDeleteMeeting(newMeeting.id, res);
-            }, MeetingsController.setTimeoutSetting);
+            // 일정 시간 경과 후 미팅방 삭제 => cron 사용 주기적으로 체크 아하
+            // setTimeout(() => {
+            //     this.autoDeleteMeeting(newMeeting.id, res);
+            // }, MeetingsController.setTimeoutSetting);
+
+            //MeetingsController.runCronSchedule();
+
+            this.autoDeleteMeetingV2(newMeeting.id, newMeeting.createdAt);
 
             // 랜덤 질문, 지령, 주제 생성
             this.autoCreateQuestion(newMeeting.id);
@@ -30,8 +48,27 @@ export class MeetingsController {
             console.log(`${newMeeting.id}번 미팅방 생성`);
         } catch (err) {
             //next(err);
-            console.log("에러확인 " ,err)
+            console.log("에러확인 ", err)
             res.status(500).json({ err: err.message })
+        }
+    }
+
+    autoDeleteMeetingV2 = (id) => {
+        cron.schedule('*/5 * * * * *', () =>{
+            this.autoDeleteMeeting(id);
+        })
+    }
+
+    // 미팅방 자동 삭제
+    autoDeleteMeeting = async (id, createdAt) => {
+        //const { id } = req.params;
+        try {
+
+            const deleteMeeting = await this.meetingsService.deleteMeeting(id, createdAt);
+            console.log(id, "번 미팅방 삭제 완료")
+
+        } catch (err) {
+            console.log(err);
         }
     }
 
@@ -39,7 +76,7 @@ export class MeetingsController {
     autoCreateQuestion = async (id, res) => {
         const meetingType = await this.meetingsService.findMeetingById(id);
         console.log("미팅방 타입 확인 ", meetingType.type)
-        if(meetingType.type == 'GROUP') {
+        if (meetingType.type == 'GROUP') {
             const createQuestion = await this.meetingsService.createQuestion();
             console.log("질문 : ", createQuestion.description)
             return createQuestion;
@@ -102,22 +139,7 @@ export class MeetingsController {
     // }
 
 
-    // 미팅방 자동 삭제
-    autoDeleteMeeting = async (id, res) => {
-        //const { id } = req.params;
-        try {
-
-            const deleteMeeting = await this.meetingsService.deleteMeeting(id);
-            console.log(id, "번 미팅방 삭제 완료")
-            // res.status(200).json({
-            //     message: '채팅방 삭제 성공',
-            //     data: deleteMeeting,
-            // })
-        } catch (err) {
-            //next(err);
-            //res.status(500).json({ err: err.message });
-        }
-    }
+    
 
     // 리스트 삭제
     deleteMeeting = async (req, res) => {

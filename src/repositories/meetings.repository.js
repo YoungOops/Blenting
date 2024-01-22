@@ -50,6 +50,7 @@ export class MeetingsRepository {
       select: {
         id: true,
         type: true,
+        createdAt:true,
       }
     });
 
