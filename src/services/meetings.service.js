@@ -71,10 +71,11 @@ export class MeetingsService {
 
   // 리스트 삭제
   deleteMeeting = async (id) => {
+    // 미팅방 존재 확인
     const meeting = await this.meetingsRepository.findMeetingById(id);
-
     if (!meeting) throw new Error('미팅방이 존재하지 않습니다.');
 
+    // 미팅방 삭제
     await this.meetingsRepository.deleteMeeting(id);
 
     return meeting;
