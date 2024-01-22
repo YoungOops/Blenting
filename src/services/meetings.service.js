@@ -73,10 +73,12 @@ export class MeetingsService {
   deleteMeeting = async (id,createdAt) => {
     // 미팅방 존재 확인
     const meeting = await this.meetingsRepository.findMeetingById(id);
-    if (!meeting) throw new Error('미팅방이 존재하지 않습니다.');
-    else {
-      if()
-    }
+    //
+    // if (!meeting) throw new Error('미팅방이 존재하지 않습니다.');
+    // else {
+    //   if(createdAt - meeting.createdAt === )
+    // }
+    //
 
     // 미팅방 삭제
     await this.meetingsRepository.deleteMeeting(id);

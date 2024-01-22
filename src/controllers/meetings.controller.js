@@ -53,18 +53,18 @@ export class MeetingsController {
         }
     }
 
-    autoDeleteMeetingV2 = (id) => {
+    autoDeleteMeetingV2 = (id, createdAt) => {
         cron.schedule('*/5 * * * * *', () =>{
-            this.autoDeleteMeeting(id);
+            this.autoDeleteMeeting(id, createdAt);
         })
     }
 
     // 미팅방 자동 삭제
-    autoDeleteMeeting = async (id, createdAt) => {
+    autoDeleteMeeting = async (id,createdAt) => {
         //const { id } = req.params;
         try {
 
-            const deleteMeeting = await this.meetingsService.deleteMeeting(id, createdAt);
+            const deleteMeeting = await this.meetingsService.deleteMeeting(id,createdAt);
             console.log(id, "번 미팅방 삭제 완료")
 
         } catch (err) {
