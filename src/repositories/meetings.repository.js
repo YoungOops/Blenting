@@ -24,16 +24,13 @@ export class MeetingsRepository {
   }
 
   // 리스트 조회
-  getAllLists = async (boardId) => {
-    const allLists = await prisma.meetings.findAll({
-      attributes: ['listName'],
-      order: [['listOrder']], // listOrder로 
-      include: [{ model: Card, as: 'cards', attributes: ['title'], }],
-      where: {
-        boardId
-      },
-    });
-    return allLists;
+  getAllMeetings = async () => {
+    const allMeetings = await prisma.meetings.findMany();
+    if(!allMeetings){
+      console.log("삭제 조건에 맞는 미팅방이 없습니다.");
+      return;
+    }
+    return allMeetings;
   }
 
   // static async getListById(listId) {
@@ -125,6 +122,17 @@ export class MeetingsRepository {
   deleteMeeting = async (id) => {
     const meeting = await prisma.meetings.delete({ where: { id: +id } })
 
+    return meeting;
+  }
+
+  // 미팅방 자동 삭제
+  autoDeleteMeeting = async (id) => {
+    const meeting = await prisma.meetings.delete({ where: { id: +id } })
+
+    if(!meeting){
+      console.log(`미팅방 ${id}가 이미 삭제되었거나 존재하지 않습니다.`);
+      return;
+    }
     return meeting;
   }
 }

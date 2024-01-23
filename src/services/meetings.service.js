@@ -1,8 +1,29 @@
 import { MeetingsRepository } from "../repositories/meetings.repository.js"
-
+import cron from 'node-cron';
 
 export class MeetingsService {
   meetingsRepository = new MeetingsRepository();
+
+  constructor() {
+    /*this.meetingCleanupJob =*/ cron.schedule('* * * * * *',() => {
+      this.autoDeleteMeetings();
+    })
+  }
+
+  autoDeleteMeetings = async () => {
+    console.log("스케줄 실행 ----------------");
+    const meetings = await this.meetingsRepository.getAllMeetings();
+    
+    for (const meeting of meetings) {
+      const currentTime = new Date();
+      const createdAt = new Date(meeting.createdAt);
+
+      if (currentTime - createdAt >= 5000) {
+        await this.meetingsRepository.autoDeleteMeeting(meeting.id, createdAt);
+        console.log(`${meeting.id}번 미팅방 삭제`);
+      }
+    }
+  }
 
   // 채팅방 생성 
   createMeeting = async () => {
@@ -17,10 +38,18 @@ export class MeetingsService {
     return meeting;
   }
 
+  // create에서 동작하는게 아니라 따로 (서버가 시작되면 바로 실행 될 수 있게) 30분 지난 미팅방
+  // autoDeleteMeetingV2 = async () => {
+    
+  //     this.meetingCleanupJob;
+      
+  // }
+
+
   // 질문,지령,주제 생성 (미완)
   createQuestion = async () => {
     const questionNum = this.makeRandomQuestionNum(1, 3);
-    
+
     let question = "question";
 
     if (questionNum === 1) {
@@ -70,24 +99,35 @@ export class MeetingsService {
 
 
   // 리스트 삭제
-  deleteMeeting = async (id,createdAt) => {
+  deleteMeeting = async (id) => {
     // 미팅방 존재 확인
     const meeting = await this.meetingsRepository.findMeetingById(id);
-    //
-    // if (!meeting) throw new Error('미팅방이 존재하지 않습니다.');
-    // else {
-    //   if(createdAt - meeting.createdAt === )
-    // }
-    //
 
-    // 미팅방 삭제
-    await this.meetingsRepository.deleteMeeting(id);
+    if (meeting) {
+      const deletedMeeting = await this.meetingsRepository.deleteMeeting(id);
+      return deletedMeeting;
+    } else {
+      throw new Error('미팅방이 존재하지 않습니다.');
+    }
 
-    return meeting;
+
+    //return meeting;
   }
 
-  deleteAllMeetings = async () => {
-    a
-  }
+
+
+  // autoDeleteMeetings = async (createdAt) => {
+  //   const currentTime = new Date();
+
+
+  //     if (currentTime - createdAt >= 5000) {
+  //       const deletedMeeting = await this.meetingsRepository.autoDeleteMeeting(id);
+  //       return deletedMeeting; 
+  //   } else {
+  //     throw new Error('미팅방이 존재하지 않습니다.');
+  //   }
+
+
+  // }
 
 }
