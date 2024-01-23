@@ -5,7 +5,7 @@ export class MeetingsService {
   meetingsRepository = new MeetingsRepository();
 
   constructor() {
-    /*this.meetingCleanupJob =*/ cron.schedule('* * * * * *',() => {
+    /*this.meetingCleanupJob =*/ cron.schedule('0 */1 * * * *',() => {
       this.autoDeleteMeetings();
     })
   }
