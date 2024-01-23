@@ -1,29 +1,29 @@
 import { MeetingsRepository } from "../repositories/meetings.repository.js"
-import cron from 'node-cron';
+//import cron from 'node-cron';
 
 export class MeetingsService {
   meetingsRepository = new MeetingsRepository();
 
   constructor() {
-    /*this.meetingCleanupJob =*/ cron.schedule('0 */1 * * * *',() => {
-      this.autoDeleteMeetings();
-    })
+    // /*this.meetingCleanupJob =*/ cron.schedule('*/5 * * * * *',() => {
+    //   this.autoDeleteMeetings();
+    // })
   }
 
-  autoDeleteMeetings = async () => {
-    console.log("스케줄 실행 ----------------");
-    const meetings = await this.meetingsRepository.getAllMeetings();
-    
-    for (const meeting of meetings) {
-      const currentTime = new Date();
-      const createdAt = new Date(meeting.createdAt);
+  // autoDeleteMeetings = async () => {                                 cron 자동삭제
+  //   console.log("스케줄 실행 ----------------");
+  //   const meetings = await this.meetingsRepository.getAllMeetings();
 
-      if (currentTime - createdAt >= 5000) {
-        await this.meetingsRepository.autoDeleteMeeting(meeting.id, createdAt);
-        console.log(`${meeting.id}번 미팅방 삭제`);
-      }
-    }
-  }
+  //   for (const meeting of meetings) {
+  //     const currentTime = new Date();
+  //     const createdAt = new Date(meeting.createdAt);
+
+  //     if (currentTime - createdAt >= 5000) {
+  //       await this.meetingsRepository.autoDeleteMeeting(meeting.id, createdAt);
+  //       console.log(`${meeting.id}번 미팅방 삭제`);
+  //     }
+  //   }
+  // }
 
   // 채팅방 생성 
   createMeeting = async () => {
@@ -40,9 +40,9 @@ export class MeetingsService {
 
   // create에서 동작하는게 아니라 따로 (서버가 시작되면 바로 실행 될 수 있게) 30분 지난 미팅방
   // autoDeleteMeetingV2 = async () => {
-    
+
   //     this.meetingCleanupJob;
-      
+
   // }
 
 
