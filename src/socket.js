@@ -34,7 +34,7 @@ export default function setupSocket(server) {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = 1;
-        const meetingId = 2;
+        const meetingId = 207;
 
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
