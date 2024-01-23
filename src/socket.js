@@ -1,18 +1,17 @@
 import { Server } from 'socket.io';
+import { prisma } from './utils/prisma/index.js';
+import { MessagesRepository } from './repositories/messages.repository.js';
 
-//함수 하나만 바로 익스포트 하기
 export default function setupSocket(server) {
-  //그냥 io 뉴 서버 해서 서버 인스턴스화 함 객체를 소프트웨어에 실체화 하면 그것을 ‘인스턴스’라고 부른다.
+  const messagesRepository = new MessagesRepository();
   const io = new Server(server);
-  //setupSocket 함수는 내부적으로 new Server(server)를 호출하여 소켓 서버 인스턴스를 생성 app.js 에서 불러다가 쓸거임
-  let users = new Set();
+
+  let users = new Set(); // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
 
   io.on('connection', (socket) => {
-    //이 유저는 어떤 이벤트를 가질 지 커넥션 했을 때 어떤식으로 값이 인식 되는지, 다음 이벤트는 어떻게 할 지 그런 걸 보면 됨
-    console.log(socket.id); //gfz_FgBaSbVL9kTaAAAD 이런식으로 콘솔 찍힘.
+    console.log(socket.id); //socket.id => gfz_FgBaSbVL9kTaAAAD 이런식으로 생김.
 
-    // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
-    users.add(socket.id);
+    users.add(socket.id); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
 
     io.emit('entry', { id: socket.id, users: [...users] }); // 들어오면 모두에게 입장을 알림
     console.log('a user connected');
@@ -28,12 +27,48 @@ export default function setupSocket(server) {
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
     //특정 클라이언트에게만 메시지를 보내려면 socket.emit을 사용할 수 있습니다.
 
-    //현재 서버랑 모두랑 연결 되어있는건데, 한 유저가. 아래에 챗 이라는 이벤트를 일으키는 것이다. 그랬을 때 어떠한 일을 할 지 정의하는 것이다
-    socket.on('chat message', (msg) => {
-      io.emit('chat message', socket.id + ' ' + msg); // 한 클라이언트가 말하면 모두에게 msg를 알림
-      console.log('message: ' + msg);
+    /** 현재 서버와 모두가 연결이 되어있음, 챗 이벤트를 시작했을 때 어떠한 일을 할지 정의하는 코드 */
+    //비동기 함수로 변경
+    socket.on('chat message', async (msg) => {
+      // 비동기 함수로 변경
+      try {
+        // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
+        const userId = 1;
+        const meetingId = 2;
+
+        // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
+        const newMessage = await messagesRepository.createMessage(
+          meetingId,
+          msg,
+        );
+
+        // 메시지 저장 후 모든 클라이언트에게 메시지를 방송
+        io.emit('chat message', { userId, message: msg }); // 메시지 형식을 객체로 변경
+        console.log('message: ', msg);
+      } catch (error) {
+        // 에러 처리 로직
+        console.error('Error saving message:', error);
+        // 필요한 경우 에러를 클라이언트에게 전송
+      }
     });
   });
-
   return io;
 }
+
+// /** 현재 서버와 모두가 연결이 되어있음, 챗 이벤트를 시작했을 때 어떠한 일을 할지 정의하는 코드 */
+// socket.on('chat message', (msg) => {
+//   //메시지스 레포지토리
+//   prisma.messages.create({
+//     data: {
+//       Users: { connect: { id: 3 } }, // 유저 3과 연결 (인증미들웨어가 있을 시 수정)
+//       Meetings: { connect: { id: 2 } },
+//       //meeting_id: +meeting_id, meeting_id를 메세지 생성 시 직접 값을 넣어주려 했으나 prisma는 스키마에서 관계를 설정해서 값을 넣어줌 (더 찾아보기)
+//       description: msg,
+//     },
+//   });
+//   io.emit('chat message', socket.id + ' ' + msg); // 한 클라이언트가 말하면 모두에게 msg를 알림
+//   console.log('message: ' + msg);
+// });
+// }); // db에 저장하는 로직 작성하기
+// return io;
+// }

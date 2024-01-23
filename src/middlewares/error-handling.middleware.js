@@ -5,7 +5,6 @@ export default function (err, req, res, next) {
       return res.status(400).json({
         errorMessage: '입력 값을 확인해주세요',
       });
-
     // user, auth router
     case 'NotEmail':
       return res.status(400).send({
