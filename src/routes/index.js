@@ -1,25 +1,15 @@
-import express from "express";
+import { Router } from "express";
+import { meetingsRouter } from "./meetings.router.js";
+import { messagesRouter } from "./messages.router.js";
 
-// import authRouter from "./auth.router.js";
-
-import authRouter from "./auth.router.js";
-import usersRouter from "./users.router.js";
-import questionsRouter from "./questions.router.js";
-import answersRouter from "./answers.router.js";
-import commentsRouter from "./comments.router.js";
+const apiRouter = Router();
 
 
-const router = express.Router();
+// 블랜팅
+// 채팅룸
+apiRouter.use("/meetings", meetingsRouter);
 
-//유즈는 그냥 다 미들웨어
-router.use("/auth", authRouter);
+// 메세지
+apiRouter.use("/messages", messagesRouter);
 
-router.use("/users", usersRouter);
-
-router.use("/questions", questionsRouter);
-
-router.use("/answers", answersRouter);
-
-router.use("/comments", commentsRouter);
-
-export default router;
+export { apiRouter };

@@ -1,24 +1,51 @@
-import { AuthService } from "../services/auth.service.js";
-export class AuthController {
-  constructor() {
-    this.authService = new AuthService();
-  }
+import { AuthService } from '../services/auth.service.js';
 
-  login = async (req, res, next) => {
+export class AuthController {
+  authService = new AuthService();
+
+  // 회원가입
+  signup = async (req, res, next) => {
     try {
-      const { email, password } = req.body;
-      const users = await this.authService.login(email, password);
-      res.cookie("accessToken", `Bearer ${users.accessToken}`);
-      return res.status(200).json({ data: users });
+      const createAuthData = req.body;
+
+      const isValidData =
+        'email' in createAuthData &&
+        'password' in createAuthData &&
+        'checkPassword' in createAuthData &&
+        'name' in createAuthData;
+
+      if (!isValidData) {
+        const error = new Error('유효하지 않은 데이터입니다.');
+        error.status = 400;
+        throw error;
+      }
+
+      const result = await this.authService.signup(createAuthData);
+
+      return res.status(201).json(result);
     } catch (err) {
       next(err);
     }
   };
 
-  logout = async (req, res, next) => {
+  // 로그인
+  signin = async (req, res, next) => {
     try {
-      res.clearCookie("accessToken");
-      return res.status(200).json({ message: "로그아웃성공" });
+      const signinData = req.body;
+
+      const isValidData = 'email' in signinData && 'password' in signinData;
+
+      if (!isValidData) {
+        const error = new Error('유효하지 않은 데이터입니다.');
+        error.status = 400;
+        throw error;
+      }
+
+      const result = await this.authService.signin(signinData);
+      res.cookie('user', result);
+      return res.status(200).json({
+        accessToken: 'Bearer ' + result,
+      });
     } catch (err) {
       next(err);
     }

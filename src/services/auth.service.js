@@ -1,43 +1,56 @@
-//일단 복사
-
-import { UsersRepository } from "../repositories/users.repository.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import env from "dotenv";
-env.config();
-
-const accessTokenSecretKey = process.env.ACCESS_TOKEN_SECRET_KEY;
-
-const comparePassword = async (password, hash) => {
-  try {
-    return await bcrypt.compare(password, hash);
-  } catch (error) {
-    console.log(error);
-  }
-  return false;
-};
+import { AuthRepository } from '../repositories/auth.repository.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export class AuthService {
-  authRepository = new UsersRepository();
+  authRepository = new AuthRepository();
 
-  login = async (email, password) => {
-    // 저장소(Repository)에게 특정 유저정보 하나를 요청합니다.
-    const user = await this.authRepository.findUsersByEmail(email);
-    // 비밀번호 확인
-    const isValidPass = await comparePassword(password, user.password);
-    if (!isValidPass) throw new Error("NotCorrectPassword");
+  signup = async (createAuthData) => {
+    const { password, checkPassword } = createAuthData;
 
-    // jwt 토큰 생성
-    const accessToken = jwt.sign({ id: user.id }, accessTokenSecretKey, {
-      expiresIn: "10h"
-    });
+    if (password !== checkPassword) {
+      const error = new Error('패스워드를 다시 확인해주세요.');
+      error.status = 403;
+      throw error;
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    let hashCreateAuthData = {
+      ...createAuthData,
+      password: hashPassword,
+    };
+
+    const result = await this.authRepository.createUser(hashCreateAuthData);
 
     return {
-      id: user.id,
-      email: user.email,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      accessToken
+      ok: true,
+      message: '회원가입이 성공적으로 완료되었습니다.',
+      data: result,
     };
+  };
+
+  signin = async (signinData) => {
+    const { email, password } = signinData;
+
+    const auth = await this.authRepository.readOneByEmail(email);
+
+    if (!auth) {
+      const error = new Error('존재하지 않는 아이디입니다.');
+      error.status = 404;
+      throw error;
+    }
+
+    const matchPassword = await bcrypt.compare(password, auth.password);
+
+    if (!matchPassword) {
+      const error = new Error('패스워드가 일치하지 않습니다.');
+      error.status = 403;
+      throw error;
+    }
+    console.log('authService', auth);
+
+    return jwt.sign({ userId: auth.userId }, process.env.JWT_SECRET, {
+      expiresIn: '24h',
+    });
   };
 }

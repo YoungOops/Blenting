@@ -123,7 +123,7 @@ model Meetings {
   Members  Members[]
   Messages Messages[]
 
-  @@map("group_meetings")
+  @@map("meetings")
 }
 
 model Members {
