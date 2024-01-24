@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { MeetingsRepository } from "../../../repositories/meetings.repository.js"
+import { MeetingsRepository } from "../repositories/meetings.repository.js";
 
 const meetingsRepository = new MeetingsRepository();
 

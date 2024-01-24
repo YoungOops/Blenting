@@ -8,7 +8,7 @@ export default function setupSocket(server) {
 
   let users = new Set(); // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
 
-  io.on('connection', (socket) => {
+  io.on('connection', (socket) => { // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id => gfz_FgBaSbVL9kTaAAAD 이런식으로 생김.
 
     users.add(socket.id); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
@@ -34,8 +34,9 @@ export default function setupSocket(server) {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = 1;
-        const meetingId = 207;
-
+        const meetingId = 208;
+        const socketId = socket.id;
+        console.log('소켓아이디 확인',socketId)
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           meetingId,
@@ -43,7 +44,7 @@ export default function setupSocket(server) {
         );
 
         // 메시지 저장 후 모든 클라이언트에게 메시지를 방송
-        io.emit('chat message', { userId, message: msg }); // 메시지 형식을 객체로 변경
+        io.emit('chat message', { socketId, message: msg }); // 메시지 형식을 객체로 변경
         console.log('message: ', msg);
       } catch (error) {
         // 에러 처리 로직
