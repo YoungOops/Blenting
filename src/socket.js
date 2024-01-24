@@ -6,21 +6,30 @@ export default function setupSocket(server) {
   const messagesRepository = new MessagesRepository();
   const io = new Server(server);
 
-  let users = new Set(); // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
+  //2번
+  let users = new Map();
+  // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
+  // js : Map, Set 찾아보기
 
   io.on('connection', (socket) => { // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id => gfz_FgBaSbVL9kTaAAAD 이런식으로 생김.
+    console.log('!@@@@@@@@@@@@@', socket.handshake.query.authorization);
+    socket.user = { name: socket.handshake.query.authorization }; // 여기에 유저 인증 정보를 넣어줘야 함
 
-    users.add(socket.id); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
-
-    io.emit('entry', { id: socket.id, users: [...users] }); // 들어오면 모두에게 입장을 알림
+    users.set(socket.id, socket.user); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
+    //3번
+    io.emit('entry', {
+      id: socket.id,
+      me: socket.user,
+      users: Array.from(users.values()),
+    }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log('a user connected');
     // 사용자의 연결이 끊어졌을 때 처리합니다.
     socket.on('disconnect', () => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
       users.delete(socket.id);
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
-      io.emit('exit', { id: socket.id, users: [...users] });
+      io.emit('exit', { id: socket.id, users: Array.from(users.values()) });
       console.log('user disconnected');
     });
 
@@ -34,9 +43,9 @@ export default function setupSocket(server) {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = 1;
-        const meetingId = 208;
+        const meetingId = 3;
         const socketId = socket.id;
-        console.log('소켓아이디 확인',socketId)
+        
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           meetingId,
@@ -46,6 +55,7 @@ export default function setupSocket(server) {
         // 메시지 저장 후 모든 클라이언트에게 메시지를 방송
         io.emit('chat message', { socketId, message: msg }); // 메시지 형식을 객체로 변경
         console.log('message: ', msg);
+        // io.emit('chat message', socket.id + ' ' + msg); // 한 클라이언트가 말하면 모두에게 msg를 알림
       } catch (error) {
         // 에러 처리 로직
         console.error('Error saving message:', error);

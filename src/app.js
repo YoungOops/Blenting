@@ -26,8 +26,8 @@ app.use(cors()); // CORS 설정
 
 app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 파싱
 app.set('view engine', 'html'); // 뷰 엔진을 HTML로 설정
-app.use(express.static(join(__dirname, 'src')));
-app.use(express.static(join(__dirname, 'frontend'))); // '/frontend' 경로로 정적 파일 제공
+// '/frontend' 경로로 정적 파일 제공 -> 퍼블릭으로 이름 바꾸기
+app.use(express.static(join(__dirname, 'frontend')));
 app.use(
   '/socket.io',
   express.static(
@@ -50,6 +50,8 @@ app.use(ErrorHandlingMiddleware);
 // HTTP 서버를 생성하고, Socket.io 서버를 설정합니다
 const server = createServer(app);
 setupSocket(server);
+
+//app.use 처럼 io.use
 
 // cron 미팅방 자동 삭제
 //startCron();

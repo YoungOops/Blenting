@@ -1,4 +1,9 @@
-const socket = io('http://localhost:3000'); // query를 이용하여 원하는 정보 넘기기 ex){query : {authorization: }} (유저 정보 넘기기)
+//로그인 이후에 1번
+const socket = io('http://localhost:3000', {
+  query: { authorization: 'JWTtoken' },
+});
+//유저id 뿐 아니라 액세스토큰을 통해 인증정보 넘겨주기=>
+
 
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
@@ -16,13 +21,13 @@ form.addEventListener('submit', (e) => {
     input.value = ''; // 메시지를 전송한 후 input 필드를 비웁니다. [내가 정할 수 있음]
   }
 });
-
+//4번
 /** "서버로부터" 'entry' 이벤트를 받으면,
  * 새로운 사용자가 입장했음을 알리는 메시지를 화면에 표시합니다. */
 socket.on('entry', (data) => {
   console.log(data);
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
-  item.textContent = data.id + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
+  item.textContent = data.me.name + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
   messages.appendChild(item); // 'li' 요소를 messages 리스트에 추가합니다.
   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 
@@ -54,10 +59,18 @@ socket.on('exit', (data) => {
   });
 });
 
-/** 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다. */
+// 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다.
 socket.on('chat message', (msg) => {
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
   item.textContent = `${msg.socketId}: ${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
   messages.appendChild(item); // 메시지 목록에 'li' 요소를 추가합니다.
   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 });
+
+// /** 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다. */
+// socket.on('chat message', (msg) => {
+//   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
+//   item.textContent = msg; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
+//   messages.appendChild(item); // 메시지 목록에 'li' 요소를 추가합니다.
+//   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
+// });
