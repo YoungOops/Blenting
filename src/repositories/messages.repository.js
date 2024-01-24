@@ -4,13 +4,13 @@ import { prisma } from '../utils/prisma/index.js';
 export class MessagesRepository {
   // 메세지 생성
   createMessage = async (meeting_id, description) => {
-console.log("repository id 확인", meeting_id)
+    console.log('repository id 확인', meeting_id);
     const newMessage = await prisma.messages.create({
       data: {
-        Users: { connect: { id: 3 } }, // 유저 3과 연결 (인증미들웨어가 있을 시 수정)
-        Meetings: {connect: {id: +meeting_id}},
+        Users: { connect: { id: 1 } }, // 유저 3과 연결 (인증미들웨어가 있을 시 수정)
+        Meetings: { connect: { id: +meeting_id } },
         //meeting_id: +meeting_id, meeting_id를 메세지 생성 시 직접 값을 넣어주려 했으나 prisma는 스키마에서 관계를 설정해서 값을 넣어줌 (더 찾아보기)
-        description,
+        description: description,
       },
     });
 
@@ -25,8 +25,7 @@ console.log("repository id 확인", meeting_id)
       },
     });
     return allMessages;
-  }
-
+  };
 
   //  채팅방 존재 유무 확인 (채팅방 삭제)
   findMeetingById = async (meeting_id) => {
@@ -36,7 +35,7 @@ console.log("repository id 확인", meeting_id)
       },
       select: {
         id: true,
-      }
+      },
     });
 
     return meeting;
@@ -50,7 +49,7 @@ console.log("repository id 확인", meeting_id)
       },
       select: {
         id: true,
-      }
+      },
     });
     return message;
   };
@@ -64,20 +63,18 @@ console.log("repository id 확인", meeting_id)
       {
         where: {
           listId: +listId,
-        }
+        },
       },
     );
 
     return list;
-  }
-
- 
+  };
 
   // 리스트 삭제
   deleteMessage = async (id) => {
-    console.log("레포지 아이디 확인" ,id)
-    const message = await prisma.messages.delete({ where: { id: +id } })
-    console.log("repository 메세지 삭제 확인", message)
+    console.log('레포지 아이디 확인', id);
+    const message = await prisma.messages.delete({ where: { id: +id } });
+    console.log('repository 메세지 삭제 확인', message);
     return message;
-  }
+  };
 }
