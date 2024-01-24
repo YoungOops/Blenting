@@ -11,8 +11,7 @@ export class AuthController {
       const isValidData =
         'email' in createAuthData &&
         'password' in createAuthData &&
-        'checkPassword' in createAuthData &&
-        'name' in createAuthData;
+        'checkPassword' in createAuthData;
 
       if (!isValidData) {
         const error = new Error('유효하지 않은 데이터입니다.');

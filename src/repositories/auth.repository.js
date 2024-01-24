@@ -6,7 +6,7 @@ export class UsersRepository {
   }
 
   createUser = async (hashCreateAuthData) => {
-    const result = await prisma.Users.create({
+    const result = await prisma.Auths.create({
       data: {
         ...hashCreateAuthData,
       },
@@ -15,7 +15,7 @@ export class UsersRepository {
   };
 
   readOneByEmail = async (email) => {
-    const users = await prisma.Users.findUnique({
+    const users = await prisma.Auths.findUnique({
       where: { email: email },
     });
 
