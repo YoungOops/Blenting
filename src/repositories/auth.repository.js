@@ -1,6 +1,6 @@
 import { prisma } from '../utils/prisma/index.js';
 
-export class UsersRepository {
+export class AuthRepository {
   constructor(prisma) {
     this.prisma = prisma;
   }
