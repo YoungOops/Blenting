@@ -49,7 +49,7 @@ export class AuthService {
     }
     console.log('authService', auth);
 
-    return jwt.sign({ userId: auth.userId }, process.env.JWT_SECRET, {
+    return jwt.sign({ userId: auth.id }, process.env.JWT_SECRET, {
       expiresIn: '24h',
     });
   };
