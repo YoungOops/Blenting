@@ -3,7 +3,7 @@ import express from 'express'; // Express.js 라이브러리
 import { createServer } from 'http'; // Node.js 기본 HTTP 서버 모듈
 import { fileURLToPath } from 'url'; // Node.js 모듈. URL을 파일 경로로 변환하는 데 사용
 import { dirname, join } from 'path'; // Node.js 모듈. 디렉토리 이름과 경로를 조작하는 데 사용
-import setupSocket from './socket.js'; // Socket.io 설정 모듈
+import setupSocket from './socket/index.js'; // Socket.io 설정 모듈
 import cors from 'cors'; // CORS 설정 라이브러리
 
 import { apiRouter } from './routes/index.js'; // API 라우터 모듈
