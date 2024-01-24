@@ -10,7 +10,7 @@ import { apiRouter } from './routes/index.js'; // API 라우터 모듈
 import cookieParser from 'cookie-parser'; // 쿠키 파싱 라이브러리
 import LogMiddleware from './middlewares/log.middleware.js'; // 로깅 미들웨어 모듈
 import ErrorHandlingMiddleware from './middlewares/error-handling.middleware.js';
-import { startCron} from "./cron/index.js";
+import { startCron } from './cron/index.js';
 
 // 현재 실행 중인 모듈의 파일 경로와 디렉토리 이름을 얻습니다
 const __filename = dirname(fileURLToPath(import.meta.url));
@@ -27,7 +27,7 @@ app.use(cors()); // CORS 설정
 app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 파싱
 app.set('view engine', 'html'); // 뷰 엔진을 HTML로 설정
 // '/frontend' 경로로 정적 파일 제공 -> 퍼블릭으로 이름 바꾸기
-app.use(express.static(join(__dirname, 'frontend')));
+app.use(express.static(join(__dirname, 'public')));
 app.use(
   '/socket.io',
   express.static(
