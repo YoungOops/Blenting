@@ -11,7 +11,7 @@ export default function setupSocket(server) {
   // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
   // js : Map, Set 찾아보기
 
-  io.on('connection', (socket) => {
+  io.on('connection', (socket) => { // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id => gfz_FgBaSbVL9kTaAAAD 이런식으로 생김.
     console.log('!@@@@@@@@@@@@@', socket.handshake.query.authorization);
     socket.user = { name: socket.handshake.query.authorization }; // 여기에 유저 인증 정보를 넣어줘야 함
@@ -45,6 +45,7 @@ export default function setupSocket(server) {
         const userId = 1;
         const meetingId = 3;
         const socketId = socket.id;
+        
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           meetingId,

@@ -4,6 +4,7 @@ const socket = io('http://localhost:3000', {
 });
 //유저id 뿐 아니라 액세스토큰을 통해 인증정보 넘겨주기=>
 
+
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
 const input = document.getElementById('input');
