@@ -51,6 +51,8 @@ app.use(ErrorHandlingMiddleware);
 const server = createServer(app);
 setupSocket(server);
 
+//app.use 처럼 io.use
+
 // cron 미팅방 자동 삭제
 // autoDeleteMeetings();
 

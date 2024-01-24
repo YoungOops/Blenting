@@ -7,7 +7,9 @@ export default function setupSocket(server) {
   const io = new Server(server);
 
   //2번
-  let users = new Map(); // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
+  let users = new Map();
+  // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
+  // js : Map, Set 찾아보기
 
   io.on('connection', (socket) => {
     console.log(socket.id); //socket.id => gfz_FgBaSbVL9kTaAAAD 이런식으로 생김.
@@ -20,7 +22,7 @@ export default function setupSocket(server) {
       id: socket.id,
       me: socket.user,
       users: Array.from(users.values()),
-    }); // 들어오면 모두에게 입장을 알림
+    }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log('a user connected');
     // 사용자의 연결이 끊어졌을 때 처리합니다.
     socket.on('disconnect', () => {
