@@ -4,12 +4,10 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 const messagesRepository = new MessagesRepository();
-
 //2번
 let users = new Map();
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
 // js : Map, Set 찾아보기
-
 export const handleChatEvent = async (io, socket) => {
   try {
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
@@ -26,7 +24,6 @@ export const handleChatEvent = async (io, socket) => {
      */
     const decoding = jwt.verify(token, process.env.JWT_SECRET);
     const decodedUserId = decoding.userId;
-
     const checkUser = await prisma.auths.findUnique({
       //users 테이블에서 하나를 찾는 프리즈마 메서드 findUnique
       //where은 조건 : { id는 users 테이블의 id : user 는 위에 jwt디코드한거.userId }
@@ -38,12 +35,9 @@ export const handleChatEvent = async (io, socket) => {
       // 유저 데이터 없으면 에러를 날린다.
       throw new Error('User not found');
     }
-
     socket.user = { email: checkUser.email };
-
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
-
     users.set(socket.id, socket.user); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
     //3번
     io.emit('entry', {
@@ -60,10 +54,8 @@ export const handleChatEvent = async (io, socket) => {
       io.emit('exit', { id: socket.id, users: Array.from(users.values()) });
       console.log('user disconnected');
     });
-
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
     //특정 클라이언트에게만 메시지를 보내려면 socket.emit을 사용할 수 있습니다.
-
     /** 현재 서버와 모두가 연결이 되어있음, 챗 이벤트를 시작했을 때 어떠한 일을 할지 정의하는 코드 */
     //비동기 함수로 변경 // msg에 front의 input.value 가 담기게 된다.
     socket.on('chat message', async (msg) => {
@@ -74,13 +66,11 @@ export const handleChatEvent = async (io, socket) => {
         const meetingId = 3;
         const socketId = socket.id;
         const socketUser = socket.user;
-
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           meetingId,
           msg,
         );
-
         // 메시지 저장 후 모든 클라이언트에게 메시지를 방송
         io.emit('chat message', { socketId, socketUser, message: msg }); // 메시지 형식을 객체로 변경
         console.log('message: ', msg);

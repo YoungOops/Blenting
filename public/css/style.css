@@ -160,3 +160,7 @@ body {
   height: calc(100% - 40px);
   overflow-y: auto;
 }
+
+.form-select {
+  width: 115px;
+}
