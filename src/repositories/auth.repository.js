@@ -5,11 +5,12 @@ export class AuthRepository {
     this.prisma = prisma;
   }
 
-  createUser = async ({ email, password }) => {
+  createAuth = async ({ email, password, userId }) => {
     const result = await prisma.Auths.create({
       data: {
         email,
         password,
+        userId,
       },
     });
     return result;

@@ -85,7 +85,7 @@ model Users {
 
   district    String? @map("district")
   description String? @map("description") @db.Text
-  nickName    String? @map("nick_name")
+  nickName    String  @unique @map("nick_name")
   mbti        String? @map("mbti")
   hobby       String? @map("hobby")
   job         String? @map("job")
