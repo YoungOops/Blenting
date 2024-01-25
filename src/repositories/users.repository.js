@@ -6,7 +6,7 @@ export class UsersRepository {
   }
 
   createUser = async (nickName, gender) => {
-    const result = await prisma.Userss.create({
+    const result = await prisma.Users.create({
       data: {
         nickName,
         gender,
