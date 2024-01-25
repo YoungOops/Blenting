@@ -14,7 +14,8 @@ form.addEventListener('submit', (e) => {
   // input 필드에 값이 있는지 확인합니다.
   if (input.value) {
     socket.emit('chat message', input.value); //'chat message' 이벤트와 메시지 내용을 서버로 전송합니다.
-    input.value = ''; // 메시지를 전송한 후 input 필드를 비웁니다. [내가 정할 수 있음]
+    //샌드 후에 (엔터 치면) 공백이 되도록 한다.
+    input.value = ''; // 메시지를 전송한 후 input 필드를 비웁니다.
   }
 });
 //4번
@@ -23,7 +24,7 @@ form.addEventListener('submit', (e) => {
 socket.on('entry', (data) => {
   console.log(data);
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
-  item.textContent = data.me.name + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
+  item.textContent = data.me.email + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
   messages.appendChild(item); // 'li' 요소를 messages 리스트에 추가합니다.
   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 
@@ -58,7 +59,7 @@ socket.on('exit', (data) => {
 // 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다.
 socket.on('chat message', (msg) => {
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
-  item.textContent = `${msg.socketId}: ${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
+  item.textContent = `${msg.socketUser.email}: ${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
   messages.appendChild(item); // 메시지 목록에 'li' 요소를 추가합니다.
   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 });
