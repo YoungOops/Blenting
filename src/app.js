@@ -1,4 +1,6 @@
 import express from 'express'; // Express.js 라이브러리
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { createServer } from 'http'; // Node.js 기본 HTTP 서버 모듈
 import { fileURLToPath } from 'url'; // Node.js 모듈. URL을 파일 경로로 변환하는 데 사용
