@@ -15,21 +15,22 @@ select.addEventListener('change', (e) => {
 })
 
 // 서버에서 온 이벤트 접수
-socket.on('vote', (data) => {
+socket.on('vote', (vote) => {
 
     // 서로 지목을 했을 때 결과를 저장하고 나타내줄 수 있는 모델을 만들고 표시 할 수 있게
 
     const item = document.createElement('li');
-    item.textContent = `${data.socketId} 가 ${data.option}을 투표`;
+    item.textContent = `${vote.fromUserNickName} 가 ${vote.toUserNickName}을 투표`;
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
 });
 
 
-socket.on('announce', ({userId, votedMe}) => {
-    console.log("voted 확인", {userId, votedMe});
+socket.on('announce', (vote) => {
+    console.log("voted 확인", vote);
     const item = document.createElement('li');
-    item.textContent = `${userId} 와 ${votedMe.fromUserId}가 서로 지목했습니다!`
+    
+    item.textContent = `${vote.fromUserNickName} 와 ${vote.toUserNickName}가 서로 지목했습니다!`
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
 })

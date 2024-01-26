@@ -24,7 +24,7 @@ form.addEventListener('submit', (e) => {
 socket.on('entry', (data) => {
   console.log(data);
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
-  item.textContent = data.me.email + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
+  item.textContent = data.me + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
   messages.appendChild(item); // 'li' 요소를 messages 리스트에 추가합니다.
   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 
@@ -58,8 +58,9 @@ socket.on('exit', (data) => {
 
 // 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다.
 socket.on('chat message', (msg) => {
+  console.log("소켓 msg 확인", msg)
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
-  item.textContent = `${msg.socketUser.email}: ${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
+  item.textContent = `${msg.socketUser}: ${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
   messages.appendChild(item); // 메시지 목록에 'li' 요소를 추가합니다.
   messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 });

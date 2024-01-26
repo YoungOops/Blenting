@@ -15,6 +15,9 @@ export const handleChatEvent = async (io, socket) => {
     //jwt 토큰
     console.log('!@@@@@@@@@@@@@', socket.handshake.query.authorization);
     const token = socket.handshake.query.authorization;
+    console.log("토큰 확인", token)
+
+    
     //jwt 가져옴,
     /**1)userId를 가져온다.
      * 2)userId로 user정보를 DB에서 가져온다.
@@ -23,8 +26,9 @@ export const handleChatEvent = async (io, socket) => {
      * 아래 코드에는 name 이라는 키와 JWT 토큰 값의 밸류가 객체로 감싸져 있음.
      */
     const decoding = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("디코딩 확인 ", decoding)
     const decodedUserId = decoding.userId;
-    const checkUser = await prisma.auths.findUnique({
+    const checkUser = await prisma.users.findUnique({
       //users 테이블에서 하나를 찾는 프리즈마 메서드 findUnique
       //where은 조건 : { id는 users 테이블의 id : user 는 위에 jwt디코드한거.userId }
       //id : decodedUserId 는 서로 같다는 의미 => 데이터가 있으면 인증이 되는 것이다.
@@ -35,14 +39,15 @@ export const handleChatEvent = async (io, socket) => {
       // 유저 데이터 없으면 에러를 날린다.
       throw new Error('User not found');
     }
-    socket.user = { email: checkUser.email };
+    socket.user = { nickName: checkUser.nickName };
+    console.log("소켓 우저 확인", socket.user)
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
-    users.set(socket.id, socket.user); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
+    users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
     //3번
     io.emit('entry', {
       id: socket.decodedUserId,
-      me: socket.user,
+      me: socket.user.nickName,
       users: Array.from(users.values()),
     }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log('a user connected');
@@ -63,9 +68,9 @@ export const handleChatEvent = async (io, socket) => {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = 1;
-        const meetingId = 3;
+        const meetingId = 1;
         const socketId = socket.id;
-        const socketUser = socket.user;
+        const socketUser = socket.user.nickName;
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           meetingId,
