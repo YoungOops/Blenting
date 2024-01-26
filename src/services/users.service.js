@@ -13,4 +13,12 @@ export class UsersService {
       id: user.id,
     };
   };
+
+  findUserById = async (userId) => {
+    return await this.usersRepository.readOneById(userId);
+  };
+
+  updateUserById = async (userId, updateUserData) => {
+    return await this.usersRepository.updateOneById(userId, updateUserData);
+  };
 }

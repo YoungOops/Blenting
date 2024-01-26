@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { meetingsRouter } from './meetings.router.js';
 import { messagesRouter } from './messages.router.js';
 import { authRouter } from './auth.router.js';
+import { usersRouter } from './users.router.js';
 
 const apiRouter = Router();
 
@@ -12,7 +13,10 @@ apiRouter.use('/meetings', meetingsRouter);
 // 메세지
 apiRouter.use('/messages', messagesRouter);
 
-// 로그인
+// 회원
 apiRouter.use('/auth', authRouter);
+
+// 프로필
+apiRouter.use('/user', usersRouter);
 
 export { apiRouter };
