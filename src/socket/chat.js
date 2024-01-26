@@ -39,11 +39,11 @@ export const handleChatEvent = async (io, socket) => {
       // 유저 데이터 없으면 에러를 날린다.
       throw new Error('User not found');
     }
-    socket.user = { nickName: checkUser.nickName };
+    socket.user = { nickName: checkUser.nickName }; // => checkUser
     console.log("소켓 우저 확인", socket.user)
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
-    users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.
+    users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
     //3번
     io.emit('entry', {
       id: socket.decodedUserId,

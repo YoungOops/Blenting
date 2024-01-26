@@ -12,7 +12,7 @@ import { apiRouter } from './routes/index.js'; // API 라우터 모듈
 import cookieParser from 'cookie-parser'; // 쿠키 파싱 라이브러리
 import LogMiddleware from './middlewares/log.middleware.js'; // 로깅 미들웨어 모듈
 import ErrorHandlingMiddleware from './middlewares/error-handling.middleware.js';
-import { startCron } from './cron/index.js';
+import { startCron } from './cron/index.js'; // 5초 후 미팅방 자동삭제
 
 // 현재 실행 중인 모듈의 파일 경로와 디렉토리 이름을 얻습니다
 const __filename = dirname(fileURLToPath(import.meta.url));
