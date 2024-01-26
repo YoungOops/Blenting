@@ -10,9 +10,6 @@ export class AuthController {
     try {
       const createAuthData = req.body;
 
-      const userProfile = await this.usersService.createProfile(createAuthData);
-      const userId = userProfile.id;
-
       const isValidData =
         'email' in createAuthData &&
         'password' in createAuthData &&
@@ -25,6 +22,9 @@ export class AuthController {
         error.status = 400;
         throw error;
       }
+
+      const userProfile = await this.usersService.createProfile(createAuthData);
+      const userId = userProfile.id;
 
       const result = await this.authService.signup(userId, createAuthData);
 
