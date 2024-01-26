@@ -16,7 +16,7 @@ export const handleVoteEvent = (io, socket) => {
 
             console.log("select data 확인 ", data);
 
-            await prisma.votes.create({
+            const newVote = await prisma.votes.create({
                 data: {
                     fromUser: { connect: { id: userId } },
                     toUser: { connect: { id: +data.option } },
@@ -24,6 +24,8 @@ export const handleVoteEvent = (io, socket) => {
                     isVote: true,
                 }
             })
+
+            
 
             // 내가 지목한 상대가 나를 지목 했을 경우 (서로 지목)
             // 해당 미팅방과 지목 받은 사람 나(현재 투표한 유저)를 기준으로 
@@ -38,7 +40,7 @@ export const handleVoteEvent = (io, socket) => {
                     fromUserId: true,
                 }
             })
-
+            console.log(`fromUserId 확인 : ${votedMe.fromUserId}, toUserId 확인 : ${votedMe.toUserId}`)
             //votedMe가 null값이 아닐경우 
             if (votedMe?.toUserId == userId) {
                 

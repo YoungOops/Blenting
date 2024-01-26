@@ -29,7 +29,8 @@ socket.on('vote', (data) => {
 socket.on('announce', ({userId, votedMe}) => {
     console.log("voted 확인", {userId, votedMe});
     const item = document.createElement('li');
-    item.textContent = `${userId} 와 ${votedMe.fromUserId}가 서로 지목했습니다!`
+    
+    item.textContent = `${votedMe.fromUserId} 와 ${votedMe.toUserId}가 서로 지목했습니다!`
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
 })
