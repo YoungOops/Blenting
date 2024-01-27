@@ -51,4 +51,28 @@ export class UsersController {
       next(err);
     }
   };
+
+  deleteUser = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+
+      const deleteUser = await this.usersService.deleteUserById(userId);
+
+      return res.status(200).json(deleteUser);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  deleteUserByAdmin = async (req, res, next) => {
+    try {
+      const { userId } = req.body;
+
+      const deleteUser = await this.usersService.deleteUserById(userId);
+
+      return res.status(200).json(deleteUser);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
