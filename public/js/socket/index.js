@@ -1,3 +1,4 @@
+import { io } from 'socket.io-client';
 
 
 const getUserToken = () => {
@@ -20,15 +21,15 @@ const getUserToken = () => {
 const getUserInfo = getUserToken();
 
 //로그인 이후에 1번
-export const meetingSocket = io('http://localhost:3000/meeting', 
-{// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
+export const meetingSocket = io('http://localhost:3000', 
+{path:'/meeting',// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
   query: {
     authorization: getUserInfo,
   },
 });
 
-export const coupleSocket = io('http://localhost:3000/couple', // namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정 풀 url : 
-{ // namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
+export const coupleSocket = io('http://localhost:3000', // namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정 풀 url : 
+{ path:'/couple',// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
   query: {
     authorization: getUserInfo,
   },

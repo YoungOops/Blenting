@@ -2,6 +2,8 @@ import express from 'express'; // Express.js 라이브러리
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { Server } from 'socket.io';
+import http from 'http';
 import { createServer } from 'http'; // Node.js 기본 HTTP 서버 모듈
 import { fileURLToPath } from 'url'; // Node.js 모듈. URL을 파일 경로로 변환하는 데 사용
 import { dirname, join } from 'path'; // Node.js 모듈. 디렉토리 이름과 경로를 조작하는 데 사용
@@ -21,6 +23,10 @@ const __dirname = dirname(__filename);
 // Express 앱을 생성합니다
 const app = express();
 const PORT = 3000;
+
+const httpServer = http.createServer(app);
+const io = new Server(httpServer);
+
 
 // 미들웨어를 설정합니다
 app.use(express.json()); // JSON 요청 본문 파싱
