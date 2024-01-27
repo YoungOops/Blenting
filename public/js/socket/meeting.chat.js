@@ -1,4 +1,4 @@
-import { socket } from './index.js';
+import { meetingSocket } from './index.js';
 //유저id 뿐 아니라 액세스토큰을 통해 인증정보 넘겨주기=>
 
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
@@ -13,7 +13,7 @@ form.addEventListener('submit', (e) => {
   e.preventDefault(); // 기본 이벤트 동작을 막습니다.
   // input 필드에 값이 있는지 확인합니다.
   if (input.value) {
-    socket.emit('chat message', input.value); //'chat message' 이벤트와 메시지 내용을 서버로 전송합니다.
+    meetingSocket.emit('chat message', input.value); //'chat message' 이벤트와 메시지 내용을 서버로 전송합니다.
     //샌드 후에 (엔터 치면) 공백이 되도록 한다.
     input.value = ''; // 메시지를 전송한 후 input 필드를 비웁니다.
   }
@@ -21,7 +21,7 @@ form.addEventListener('submit', (e) => {
 //4번
 /** "서버로부터" 'entry' 이벤트를 받으면,
  * 새로운 사용자가 입장했음을 알리는 메시지를 화면에 표시합니다. */
-socket.on('entry', (data) => {
+meetingSocket.on('entry', (data) => {
   console.log(data);
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
   item.textContent = data.me + '님이 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
@@ -40,7 +40,7 @@ socket.on('entry', (data) => {
 });
 
 /** 서버로부터 'exit' 이벤트를 받으면 사용자의 퇴장 메시지를 화면에 표시합니다. */
-socket.on('exit', (data) => {
+meetingSocket.on('exit', (data) => {
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
   item.textContent = data.id + '님이 퇴장 하였습니다.'; // 퇴장 메시지를 설정합니다.
   messages.appendChild(item); // 메시지 목록에 퇴장 메시지를 추가합니다.
@@ -57,7 +57,7 @@ socket.on('exit', (data) => {
 });
 
 // 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다.
-socket.on('chat message', (msg) => {
+meetingSocket.on('chat message', (msg) => {
   console.log("소켓 msg 확인", msg)
   const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
   item.textContent = `${msg.socketUser}: ${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.

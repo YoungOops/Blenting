@@ -1,4 +1,4 @@
-import { socket } from './index.js';
+import { meetingSocket } from './index.js';
 
 const select = document.getElementById('select');
 const messages = document.getElementById('chat-messages');
@@ -9,7 +9,7 @@ select.addEventListener('change', (e) => {
     if (select.value) {
 
         // 클라이언트에서 서버로 이벤트 발송
-        socket.emit('vote', { option: select.value });
+        meetingSocket.emit('vote', { option: select.value });
         select.selectedIndex = 0;
     }
 })
