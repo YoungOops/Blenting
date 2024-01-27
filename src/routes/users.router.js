@@ -1,17 +1,34 @@
 import { Router } from 'express';
 import { UsersController } from '../controllers/users.controller.js';
-import { isAuth } from '../middlewares/auth.middleware.js';
+import { AuthMiddleware } from '../middlewares/auth.middleware.js';
 
 const usersRouter = Router();
 
 // 클래스
 const usersController = new UsersController();
+const authMiddleware = new AuthMiddleware();
 
 /** 유저 상세 조회 */
-usersRouter.get('/profile', isAuth, usersController.getProfile);
+usersRouter.get('/profile', authMiddleware.isAuth, usersController.getProfile);
 
 /** 유저 프로필 수정 **/
-usersRouter.patch('/updateProfile', isAuth, usersController.updateProfile);
+usersRouter.patch(
+  '/updateProfile',
+  authMiddleware.isAuth,
+  usersController.updateProfile,
+);
+
+/** 유저 삭제 **/
+usersRouter.delete(
+  '/deleteUser',
+  authMiddleware.isAuth,
+  usersController.deleteUser,
+);
+usersRouter.delete(
+  '/deleteUserByAdmin',
+  authMiddleware.isAdmin,
+  usersController.deleteUserByAdmin,
+);
 
 export { usersRouter };
 //디폴트로 하면 하나의 클래스,함수 객체 내보내는 거임
