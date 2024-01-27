@@ -10,6 +10,18 @@ export class UsersRepository {
       data: {
         nickName,
         gender,
+        role: 'CUSTOMER',
+      },
+    });
+    return result;
+  };
+
+  createAdmin = async (nickName, gender) => {
+    const result = await prisma.Users.create({
+      data: {
+        nickName,
+        gender,
+        role: 'ADMIN',
       },
     });
     return result;
@@ -28,5 +40,12 @@ export class UsersRepository {
       data: updateUserData,
     });
     return updateUser;
+  };
+
+  deleteOneById = async (userId) => {
+    const deleteUser = await prisma.Users.delete({
+      where: { id: userId },
+    });
+    return deleteUser;
   };
 }

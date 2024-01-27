@@ -44,7 +44,7 @@ export default function (err, req, res, next) {
     default:
       console.log(err);
       return res.status(500).send({
-        errorMessage: '서버터짐',
+        errorMessage: '서버 오류',
       });
   }
 }
