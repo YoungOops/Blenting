@@ -11,6 +11,13 @@ const authMiddleware = new AuthMiddleware();
 /** 유저 상세 조회 */
 usersRouter.get('/profile', authMiddleware.isAuth, usersController.getProfile);
 
+/**관리자 유저 전체조회 */
+usersRouter.get(
+  '/allProfiles',
+  authMiddleware.isAdmin,
+  usersController.getAllProfiles,
+);
+
 /** 유저 프로필 수정 **/
 usersRouter.patch(
   '/updateProfile',

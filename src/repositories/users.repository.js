@@ -34,6 +34,12 @@ export class UsersRepository {
     return findUser;
   };
 
+  /** 유저 전체 조회 */
+  readAll = async () => {
+    const findUser = await prisma.Users.findMany();
+    return findUser;
+  };
+
   updateOneById = async (userId, updateUserData) => {
     const updateUser = await prisma.Users.update({
       where: { id: userId },
