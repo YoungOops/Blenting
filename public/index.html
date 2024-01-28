@@ -14,7 +14,9 @@
 
   <body>
     <!-- io 라는 전역 함수 사용하도록 제일 위에 놨습니다.-->
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- CDN을 사용하여 socket.io-client 로드 -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <!-- <script src="socket.io/socket.io.js"></script> -->
     <div id="chat-container">
       <div id="chat-messages-container">
         <div id="chat-messages">

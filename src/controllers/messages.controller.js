@@ -6,7 +6,7 @@ export class MessagesController {
     messagesRepository = new MessagesRepository();
 
     // 메세지 생성
-    createMessage = async (req, res) => {
+    createMessage = async (req, res, next) => {
         const { meeting_id } = req.params;
         const { description } = req.body;
         try {

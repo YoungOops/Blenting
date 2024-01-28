@@ -2,8 +2,8 @@ import express from 'express'; // Express.js 라이브러리
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { Server } from 'socket.io';
-import http from 'http';
+import { Server } from 'socket.io'; //
+//import http from 'http';
 import { createServer } from 'http'; // Node.js 기본 HTTP 서버 모듈
 import { fileURLToPath } from 'url'; // Node.js 모듈. URL을 파일 경로로 변환하는 데 사용
 import { dirname, join } from 'path'; // Node.js 모듈. 디렉토리 이름과 경로를 조작하는 데 사용
@@ -24,8 +24,7 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-const httpServer = http.createServer(app);
-const io = new Server(httpServer);
+const httpServer = createServer(app);
 
 
 // 미들웨어를 설정합니다
@@ -36,17 +35,25 @@ app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 �
 app.set('view engine', 'html'); // 뷰 엔진을 HTML로 설정
 // '/frontend' 경로로 정적 파일 제공 -> 퍼블릭으로 이름 바꾸기
 app.use(express.static(join(__dirname, 'public')));
+
+// 서버 응답에 MIME 타입을 설정
 app.use(
   '/socket.io',
   express.static(
-    join(__dirname, '..', 'node_modules', 'socket.io', 'client-dist'),
+    join(__dirname, '..', 'node_modules', 'socket.io', 'dist'),
   ),
 ); // Socket.io 클라이언트 라이브러리 제공
 
-// 라우트를 설정합니다
-app.get('/', (req, res) => {
+// 라우트를 설정합니다 meeting네임스페이스
+app.get('/meeting', (req, res) => {
   // 루트 경로에 대한 GET 요청 처리
-  res.sendFile(join(__dirname, 'src', 'index.html')); // 'index.html' 파일을 응답으로 전송
+  res.sendFile(join(__dirname, 'public', 'index.html')); // 'index.html' 파일을 응답으로 전송
+});
+
+// 라우트를 설정합니다 couple네임스페이스
+app.get('/couple', (req, res) => {
+  // 루트 경로에 대한 GET 요청 처리
+  res.sendFile(join(__dirname, 'public', 'index.html')); // 'index.html' 파일을 응답으로 전송
 });
 
 // 미들웨어를 설정합니다
@@ -56,8 +63,7 @@ app.use(LogMiddleware); // 로깅
 app.use(ErrorHandlingMiddleware);
 
 // HTTP 서버를 생성하고, Socket.io 서버를 설정합니다
-const server = createServer(app);
-setupSocket(server);
+setupSocket(httpServer);
 
 //app.use 처럼 io.use
 
@@ -65,6 +71,6 @@ setupSocket(server);
 //startCron();
 
 // 서버를 시작합니다
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`${PORT} 포트로 서버가 열렸어요!`);
 });

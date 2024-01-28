@@ -3,11 +3,11 @@ import { prisma } from '../utils/prisma/index.js';
 //const { List, Card } = db;
 export class MessagesRepository {
   // 메세지 생성
-  createMessage = async (meeting_id, description) => {
+  createMessage = async (userId, meeting_id, description) => {
     console.log('repository id 확인', meeting_id);
     const newMessage = await prisma.messages.create({
       data: {
-        Users: { connect: { id: 1 } }, // 유저 1과 연결 (인증미들웨어가 있을 시 수정)
+        Users: { connect: { id: userId } }, // 유저 1과 연결 (인증미들웨어가 있을 시 수정)
         Meetings: { connect: { id: +meeting_id } },
         //meeting_id: +meeting_id, meeting_id를 메세지 생성 시 직접 값을 넣어주려 했으나 prisma는 스키마에서 관계를 설정해서 값을 넣어줌 (더 찾아보기)
         description: description,

@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 const messagesRepository = new MessagesRepository();
-const meetingsRepository = new MeetingsRepository();
 //2번
 let users = new Map();  
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기

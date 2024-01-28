@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { MessagesController } from '../controllers/messages.controller.js';
-import { isAuth } from '../middlewares/auth.middleware.js';
+import { AuthMiddleware } from '../middlewares/auth.middleware.js';
 
 
 const messagesController = new MessagesController();
+const authMiddleware = new AuthMiddleware();
 
 const messagesRouter = Router();
 
 // 메세지 생성
-messagesRouter.post('/:meeting_id', isAuth, messagesController.createMessage);
+messagesRouter.post('/:meeting_id', authMiddleware.isAuth, messagesController.createMessage);
 
 
 // 조회
