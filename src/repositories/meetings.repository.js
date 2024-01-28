@@ -23,7 +23,7 @@ export class MeetingsRepository {
     return createQuestion;
   }
 
-  // 리스트 조회
+  // 채팅방 조회
   getAllMeetings = async () => {
     const allMeetings = await prisma.meetings.findMany();
     if(!allMeetings){
