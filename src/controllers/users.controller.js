@@ -15,6 +15,17 @@ export class UsersController {
       next(err);
     }
   };
+  /** 유저 전체조회 */
+  getAllProfiles = async (req, res, next) => {
+    try {
+      // 서비스 계층에 구현된 findUserById 사용
+      const user = await this.usersService.findAllUsers();
+
+      return res.status(200).json(user);
+    } catch (err) {
+      next(err);
+    }
+  };
 
   updateProfile = async (req, res, next) => {
     try {

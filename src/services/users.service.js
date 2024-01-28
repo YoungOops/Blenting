@@ -27,6 +27,10 @@ export class UsersService {
   findUserById = async (userId) => {
     return await this.usersRepository.readOneById(userId);
   };
+  /**유저 전체 조회 */
+  findAllUsers = async () => {
+    return await this.usersRepository.readAll();
+  };
 
   updateUserById = async (userId, updateUserData) => {
     return await this.usersRepository.updateOneById(userId, updateUserData);
