@@ -17,8 +17,16 @@ export class AuthRepository {
         },
       });
       return result;
-    } catch (userId) {
-      return await this.usersRepository.deleteOneById(userId);
+    } catch (err) {
+      await this.usersRepository.deleteOneById(userId);
+      const result = await prisma.Auths.create({
+        data: {
+          email,
+          password,
+          userId,
+        },
+      });
+      return result;
     }
   };
 
