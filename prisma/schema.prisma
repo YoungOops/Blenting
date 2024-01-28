@@ -108,8 +108,10 @@ model Users {
   Auths Auths?
 
   // 현재 테이블이 해당 테이블과 1:N 관계를 맺습니다.
-  Messages Messages[]
-  Members  Members[]
+  Messages      Messages[]
+  Members       Members[]
+  VotesFromUser Votes[]    @relation("fromUser")
+  VotesToUser   Votes[]    @relation("toUser")
 
   @@map("users")
 }
@@ -128,6 +130,7 @@ model Meetings {
 
   Members  Members[]
   Messages Messages[]
+  Votes    Votes[]
 
   @@map("meetings")
 }
@@ -181,4 +184,22 @@ model Payments {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("payments")
+}
+
+model Votes {
+  id         Int     @id @default(autoincrement()) @map("id")
+  fromUserId Int     @map("from_user_id")
+  toUserId   Int     @map("to_user_id")
+  meetingId  Int     @map("meeting_id")
+  isVote     Boolean @map("is_vote")
+
+  votedAt   DateTime @default(now()) @map("voted_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  fromUser Users    @relation("fromUser", fields: [fromUserId], references: [id])
+  toUser   Users    @relation("toUser", fields: [toUserId], references: [id])
+  meeting  Meetings @relation(fields: [meetingId], references: [id])
+
+  @@map("votes")
 }
