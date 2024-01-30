@@ -3,6 +3,7 @@ import { meetingsRouter } from './meetings.router.js';
 import { messagesRouter } from './messages.router.js';
 import { authRouter } from './auth.router.js';
 import { usersRouter } from './users.router.js';
+import { adminRouter } from './admin.router.js';
 import { paymentRouter } from './payment.router.js';
 
 const apiRouter = Router();
