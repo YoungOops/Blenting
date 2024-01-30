@@ -26,22 +26,20 @@ const PORT = 3000;
 
 const httpServer = createServer(app);
 
-
 // 미들웨어를 설정합니다
 app.use(express.json()); // JSON 요청 본문 파싱
 app.use(cors()); // CORS 설정
 
 app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 파싱
 app.set('view engine', 'html'); // 뷰 엔진을 HTML로 설정
+
 // '/frontend' 경로로 정적 파일 제공 -> 퍼블릭으로 이름 바꾸기
 app.use(express.static(join(__dirname, 'public')));
 
 // 서버 응답에 MIME 타입을 설정
 app.use(
   '/socket.io',
-  express.static(
-    join(__dirname, '..', 'node_modules', 'socket.io', 'dist'),
-  ),
+  express.static(join(__dirname, '..', 'node_modules', 'socket.io', 'dist')),
 ); // Socket.io 클라이언트 라이브러리 제공
 
 // 라우트를 설정합니다 meeting네임스페이스
@@ -54,6 +52,11 @@ app.get('/meeting', (req, res) => {
 app.get('/couple', (req, res) => {
   // 루트 경로에 대한 GET 요청 처리
   res.sendFile(join(__dirname, 'public', 'index.html')); // 'index.html' 파일을 응답으로 전송
+});
+
+/** 백오피스 페이지 경로 설정 */
+app.get('/admin-secret', (req, res) => {
+  res.sendFile(join(__dirname, 'public', 'admin', 'admin.html'));
 });
 
 // 미들웨어를 설정합니다

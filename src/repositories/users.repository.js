@@ -36,7 +36,10 @@ export class UsersRepository {
 
   /** 유저 전체 조회 */
   readAll = async () => {
-    const findUser = await prisma.Users.findMany();
+    const findUser = await prisma.Users.findMany({
+      //include로 연결된 테이블의 데이터 불러오기.
+      include: { Auths: true },
+    });
     return findUser;
   };
 
