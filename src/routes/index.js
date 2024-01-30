@@ -3,6 +3,7 @@ import { meetingsRouter } from './meetings.router.js';
 import { messagesRouter } from './messages.router.js';
 import { authRouter } from './auth.router.js';
 import { usersRouter } from './users.router.js';
+import { adminRouter } from './admin.router.js';
 
 const apiRouter = Router();
 
@@ -18,5 +19,8 @@ apiRouter.use('/auth', authRouter);
 
 // 프로필
 apiRouter.use('/user', usersRouter);
+
+// 관리자
+apiRouter.use('/admin', adminRouter);
 
 export { apiRouter };
