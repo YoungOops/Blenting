@@ -3,10 +3,12 @@ import { prisma } from '../utils/prisma/index.js';
 //const { List, Card } = db;
 export class MeetingsRepository {
   // 채팅방 생성
-  createMeeting = async () => {
+  createMeeting = async (type) => {
 
     const newMeeting = await prisma.meetings.create({
-      data: {},
+      data: {
+        type:type,
+      },
     });
 
     return newMeeting;

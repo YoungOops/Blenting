@@ -35,7 +35,7 @@ export class MeetingsController {
             //     this.autoDeleteMeeting(newMeeting.id, res);
             // }, MeetingsController.setTimeoutSetting);
 
-            
+
             //this.meetingsService.autoDeleteMeetingV2(/*newMeeting.id, newMeeting.createdAt*/);
             // 랜덤 질문, 지령, 주제 생성
             this.autoCreateQuestion(newMeeting.id);
@@ -53,11 +53,34 @@ export class MeetingsController {
             res.status(500).json({ err: err.message })
         }
     }
-    
+
     // runCronSchedule = async () => {
     //     this.meetingsService.autoDeleteMeetingV2(this.newMeeting.id, newMeeting.createdAt);
     // }
-    
+
+
+
+    // socket 존재하는 미팅방(group) 찾고 가져오기 
+    findAndGetMeeting = async (req, res) => {
+        const { type } = req.headers;
+        try {
+
+            const meeting = await this.meetingsService.findAndGetMeeting(type);
+
+            res.status(200).json({
+                message: "미팅방이 존재합니다.",
+                meeting,
+            })
+
+        } catch (err) {
+            console.error("알 수 없는 에러, 관리자에게 문의하세요", err);
+        }
+
+    }
+
+
+
+
 
     // 질문,지령,주제 생성 (미완) 미팅방 테이블과 question 테이블 관계 짓고 questionId 추가 
     autoCreateQuestion = async (id, res) => {

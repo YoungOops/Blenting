@@ -38,6 +38,51 @@ export class MeetingsService {
     return meeting;
   }
 
+  // 그룹타입의 미팅방 찾기
+  findAndGetMeeting = async (type) => {
+
+    // 2024 01 29 따로 빼서 수정하기 ex) 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
+
+    // 채팅방 타입
+    // const type = 'GROUP';
+
+
+    // 타입에 따른 채팅방 정원
+    let maxMeetingCapacity = 0;
+
+    if (type === 'GROUP') {
+      maxMeetingCapacity = 6;
+
+    } else if(type === 'COUPLE'){
+      maxMeetingCapacity = 2;
+    }
+
+
+
+
+    // 그룹 타입의 채팅방의 id, members의 userId
+    // existMeetingsAndUsers(async 함수)에 return이 없으면 promise객체 자체를 반환하기때문에 if문에서 항상 true 반환
+    const meetingAndUser = await this.meetingsRepository.existMeetingsAndUsers(type);
+
+    console.log('meeting방 인원 확인', meetingAndUser);
+
+    // 정원이 안 찬 미팅방
+    let meeting;
+
+    // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
+    if (!meetingAndUser || meetingAndUser.every(meeting => meeting.Members.length >= maxMeetingCapacity)) {
+
+      return meeting = await this.meetingsRepository.createMeeting(type);
+
+
+    } else {
+      // find 조건을 만족하는 첫 번째를 반환
+      return meeting = meetingAndUser.find(user => user.Members.length < maxMeetingCapacity);
+
+    }
+
+  }
+
   // create에서 동작하는게 아니라 따로 (서버가 시작되면 바로 실행 될 수 있게) 30분 지난 미팅방
   // autoDeleteMeetingV2 = async () => {
 

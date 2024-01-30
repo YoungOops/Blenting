@@ -17,36 +17,7 @@ let users = new Map();
 
 export const meetingHandleChatEvent = async (io, socket) => {
   try {
-    // 2024 01 29 따로 빼서 수정하기 ex) 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
-
-    // 채팅방 타입
-    const type = 'GROUP';
-    // 채팅방 정원
-    const maxMeetingCapacity = 6;
-
-    // 그룹 타입의 채팅방의 id, members의 userId
-     // existMeetingsAndUsers(async 함수)에 return이 없으면 promise 객체 자체를 반환하기때문에 if문에서 항상 true 반환
-    const meetingAndUser = await meetingsRepository.existMeetingsAndUsers(type);
-
-    console.log('meeting방 인원 확인',meetingAndUser);
-
-    // 정원이 안 찬 미팅방
-    let meeting;
-
-    // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
-    if (!meetingAndUser || meetingAndUser.every(meeting => meeting.Members.length >= maxMeetingCapacity)) {
-
-      await meetingsRepository.createMeeting();
-      
-    } else {
-      // find 조건을 만족하는 첫 번째를 반환
-      meeting = meetingAndUser.find(user => user.Members.length < maxMeetingCapacity);
-
-    }
-
-
-
-
+    
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id
     //jwt 토큰
@@ -54,6 +25,8 @@ export const meetingHandleChatEvent = async (io, socket) => {
     const token = socket.handshake.query.authorization;
     console.log("토큰 확인", token)
 
+    const meetingId = socket.handshake.query.roomId;
+    console.log("meetingId 확인 ", meetingId);
 
     //jwt 가져옴,
     /**1)userId를 가져온다.
@@ -83,11 +56,11 @@ export const meetingHandleChatEvent = async (io, socket) => {
     users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
 
     // 현재 미팅방과 유저(나) 찾기 
-    const existingMember = await membersRepository.existingMember(meeting.id, checkUser.id);
+    const existingMember = await membersRepository.existingMember(meetingId, checkUser.id);
 
     if (!existingMember) {
       // 중복되지 않은 경우에만 맴버에 추가
-      await membersRepository.createMember(meeting.id, checkUser.id);
+      await membersRepository.createMember(meetingId, checkUser.id);
 
     }
 
@@ -118,7 +91,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = checkUser.id;
-        const meetingId = meeting.id;
+        const meetingId = roomId; // meeting.id;
         const socketId = socket.id;
         const socketUser = socket.user.nickName;
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장

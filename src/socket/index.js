@@ -19,8 +19,8 @@ export default function setupSocket(server) {
     console.log('Meeting Socket Query:', socket.handshake.query);
 
 
-    socket.join('meetingRoom');
-    // 2024 01 29 socket.join(socket.handshake.query.roomId); 클라이언트에서 roomId가져오게 되었을 시 받아오기
+    //socket.join('meetingRoom');
+    socket.join(socket.handshake.query.roomId);  // 클라이언트에서 roomId가져오게 되었을 시 받아오기
     meetingHandleChatEvent(meeting, socket);
     handleVoteEvent(meeting, socket);
   });
@@ -30,8 +30,8 @@ export default function setupSocket(server) {
     console.log('Couple Socket Query:', socket.handshake.query);
 
 
-    socket.join('coupleRoom');
-    //2024 01 29 socket.join(socket.handshake.query.roomId); 클라이언트에서 roomId가져오게 되었을 시 받아오기
+    //socket.join('coupleRoom');
+    socket.join(socket.handshake.query.roomId); // 클라이언트에서 roomId가져오게 되었을 시 받아오기
     coupleHandleChatEvent(couple, socket);
   });
 
