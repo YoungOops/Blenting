@@ -26,7 +26,7 @@ export class MeetingsRepository {
   // 채팅방 조회
   getAllMeetings = async () => {
     const allMeetings = await prisma.meetings.findMany();
-    if(!allMeetings){
+    if (!allMeetings) {
       console.log("삭제 조건에 맞는 미팅방이 없습니다.");
       return;
     }
@@ -47,7 +47,7 @@ export class MeetingsRepository {
       select: {
         id: true,
         type: true,
-        createdAt:true,
+        createdAt: true,
       }
     });
 
@@ -129,10 +129,36 @@ export class MeetingsRepository {
   autoDeleteMeeting = async (id) => {
     const meeting = await prisma.meetings.delete({ where: { id: +id } })
 
-    if(!meeting){
+    if (!meeting) {
       console.log(`미팅방 ${id}가 이미 삭제되었거나 존재하지 않습니다.`);
       return;
     }
     return meeting;
   }
+
+
+  // 타입에 맞는 채팅방들 찾기  meeting.chat.js
+  existMeetingsAndUsers = async (type) => {
+
+    return await prisma.meetings.findMany({
+      where: {
+        type: type,
+      },
+      select: {
+        id: true,
+        Members: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+  }
+
+
+
+
+
+
+
 }

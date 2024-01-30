@@ -18,16 +18,23 @@ export const handleVoteEvent = async (io, socket) => {
     console.log("vote디코딩 확인 ", decoding)
     const decodedUserId = decoding.userId;
     const checkUser = await prisma.users.findUnique({
-      //users 테이블에서 하나를 찾는 프리즈마 메서드 findUnique
-      //where은 조건 : { id는 users 테이블의 id : user 는 위에 jwt디코드한거.userId }
-      //id : decodedUserId 는 서로 같다는 의미 => 데이터가 있으면 인증이 되는 것이다.
-      where: { id: decodedUserId },
+        //users 테이블에서 하나를 찾는 프리즈마 메서드 findUnique
+        //where은 조건 : { id는 users 테이블의 id : user 는 위에 jwt디코드한거.userId }
+        //id : decodedUserId 는 서로 같다는 의미 => 데이터가 있으면 인증이 되는 것이다.
+        where: { id: decodedUserId },
     });
     // 근데 데이터가 있는지 없는지 확인.
     if (!checkUser) {
-      // 유저 데이터 없으면 에러를 날린다.
-      throw new Error('User not found');
+        // 유저 데이터 없으면 에러를 날린다.
+        throw new Error('User not found');
     }
+
+    // 2024 01 29 미팅Id를 어떻게 가져오지?
+    // await prisma.members.findUnique({
+    //     where: {
+    //         userId: checkUser.id,
+    //     }
+    // })
 
 
     // 클라이언트에서 온 이벤트 접수
@@ -47,8 +54,8 @@ export const handleVoteEvent = async (io, socket) => {
                     isVote: true,
                 }
             })
-            
-            
+
+
 
 
             // 내가 지목한 상대가 나를 지목 했을 경우 (서로 지목)

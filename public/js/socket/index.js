@@ -8,6 +8,26 @@ let coupleSocket;
 // meetingCurrentPage = 'meeting'; // 임시
 // coupleCurrentPage = 'couple'; // 임시
 
+
+// 2024 01 29 미팅 참여하기 버튼 클릭 시 
+// const existMeetings = await prisma.meetings.findMany({
+//   where: {
+//     type:'GROUP'
+//   }
+// });
+// if(!existMeetings.length) {
+//   await prisma.meetings.create({
+//     data:{},
+//   })
+// }
+
+// const meeting = await prisma.meetings.findFirst({
+//   where:{
+//     type: 'GROUP',
+//   }
+// }) 같은 api 호출 할 수 있게
+// res 에서 meeting.id 를 query로 가져와서 보내주기
+
 const getUserToken = () => {
 
 
@@ -38,6 +58,7 @@ if (window.location.pathname === '/meeting') { // window.location.pathname => �
       //path: '/meeting',// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
       query: {
         authorization: getUserInfo,
+        // 2024 01 29 roomId:`meeting:${meeting.id}`
       },
     });
 
@@ -53,6 +74,7 @@ if (window.location.pathname === '/couple') {
       //path: '/couple',// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
       query: {
         authorization: getUserInfo,
+        //roomId:`couple:${meeting.id}`
       },
     });
 

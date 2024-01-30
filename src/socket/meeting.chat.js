@@ -1,34 +1,50 @@
 import { MessagesRepository } from '../repositories/messages.repository.js';
-import {MeetingsRepository} from '../repositories/meetings.repository.js';
+import { MeetingsRepository } from '../repositories/meetings.repository.js';
+import { MembersRepository } from '../repositories/members.repository.js';
 import { prisma } from '../utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 const messagesRepository = new MessagesRepository();
+const meetingsRepository = new MeetingsRepository();
+const membersRepository = new MembersRepository();
 //2번
-let users = new Map();  
+let users = new Map();
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
 // js : Map, Set 찾아보기
 
+
+
 export const meetingHandleChatEvent = async (io, socket) => {
   try {
+    // 2024 01 29 따로 빼서 수정하기 ex) 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
 
-    const existMeetings = await prisma.meetings.findMany({
-      where: {
-        type:'GROUP'
-      }
-    });
-    if(!existMeetings) {
-      await prisma.meetings.create({
-        data:{},
-      })
+    // 채팅방 타입
+    const type = 'GROUP';
+    // 채팅방 정원
+    const maxMeetingCapacity = 6;
+
+    // 그룹 타입의 채팅방의 id, members의 userId
+     // existMeetingsAndUsers(async 함수)에 return이 없으면 promise 객체 자체를 반환하기때문에 if문에서 항상 true 반환
+    const meetingAndUser = await meetingsRepository.existMeetingsAndUsers(type);
+
+    console.log('meeting방 인원 확인',meetingAndUser);
+
+    // 정원이 안 찬 미팅방
+    let meeting;
+
+    // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
+    if (!meetingAndUser || meetingAndUser.every(meeting => meeting.Members.length >= maxMeetingCapacity)) {
+
+      await meetingsRepository.createMeeting();
+      
+    } else {
+      // find 조건을 만족하는 첫 번째를 반환
+      meeting = meetingAndUser.find(user => user.Members.length < maxMeetingCapacity);
+
     }
 
-    const meeting = await prisma.meetings.findFirst({
-      where:{
-        type: 'GROUP',
-      }
-    })
+
 
 
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
@@ -38,7 +54,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
     const token = socket.handshake.query.authorization;
     console.log("토큰 확인", token)
 
-    
+
     //jwt 가져옴,
     /**1)userId를 가져온다.
      * 2)userId로 user정보를 DB에서 가져온다.
@@ -66,12 +82,16 @@ export const meetingHandleChatEvent = async (io, socket) => {
     // socket.user = { email: user.email };
     users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
 
-    await prisma.members.create({
-      data:{
-        meetingId: meeting.id,
-        userId: checkUser.id,
-      },
-    })
+    // 현재 미팅방과 유저(나) 찾기 
+    const existingMember = await membersRepository.existingMember(meeting.id, checkUser.id);
+
+    if (!existingMember) {
+      // 중복되지 않은 경우에만 맴버에 추가
+      await membersRepository.createMember(meeting.id, checkUser.id);
+
+    }
+
+
 
     //3번
     io.emit('meeting entry', {
@@ -85,7 +105,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
       users.delete(socket.me);
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
-      io.emit('meeting exit', { id: socket.id, me: socket.user.nickName,  users: Array.from(users.values()) });
+      io.emit('meeting exit', { id: socket.id, me: socket.user.nickName, users: Array.from(users.values()) });
       console.log(`${socket.user.nickName} user disconnected meeting`);
     });
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
