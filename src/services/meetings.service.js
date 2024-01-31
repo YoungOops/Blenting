@@ -43,17 +43,16 @@ export class MeetingsService {
 
     // 2024 01 29 따로 빼서 수정하기 ex) 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
 
-    // 채팅방 타입
-    // const type = 'GROUP';
-
+    //const maxMeetingCapacity = 6;
 
     // 타입에 따른 채팅방 정원
     let maxMeetingCapacity = 0;
 
+    // type을 가져올 시
     if (type === 'GROUP') {
       maxMeetingCapacity = 6;
 
-    } else if(type === 'COUPLE'){
+    } else if (type === 'COUPLE') {
       maxMeetingCapacity = 2;
     }
 
@@ -72,7 +71,7 @@ export class MeetingsService {
     // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
     if (!meetingAndUser || meetingAndUser.every(meeting => meeting.Members.length >= maxMeetingCapacity)) {
 
-      return meeting = await this.meetingsRepository.createMeeting(type);
+      return meeting = await this.meetingsRepository.createMeeting();
 
 
     } else {

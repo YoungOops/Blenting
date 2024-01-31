@@ -91,7 +91,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = checkUser.id;
-        const meetingId = roomId; // meeting.id;
+         // 미팅아이디는 위에서 이미 선언 함;
         const socketId = socket.id;
         const socketUser = socket.user.nickName;
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
