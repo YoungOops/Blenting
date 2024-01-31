@@ -50,7 +50,7 @@ export class MeetingsService {
 
     // type을 가져올 시
     if (type === 'GROUP') {
-      maxMeetingCapacity = 6;
+      maxMeetingCapacity = 2; // 테스트를 위한 2 설정 maxMeetingCapacity = 6
 
     } else if (type === 'COUPLE') {
       maxMeetingCapacity = 2;

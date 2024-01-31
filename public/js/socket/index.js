@@ -92,13 +92,12 @@ const getUserToken = () => {
 
 const getSocket = (meetingType, roomId) => {
   const getUserInfo = getUserToken();
-//const meeting = await ClickMatchingButton();
-//console.log('meeting 확인 ', meeting)
+  console.log("getSocket에서 roomId 확인 ", roomId);
 
 // meeting과 couple이 동시에 실행되기 때문에 조건을 걸어서 조건을 충족하는 하나만 실행
  // window.location.pathname => 브라우저의 현재 경로
   console.log('현재 페이지 확인', window.location.pathname)
-
+  console.log('현재 페이지 확인', window.location.href);
  
   const socket = io(`http://localhost:3000/${meetingType}`,
     {

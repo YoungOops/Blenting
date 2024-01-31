@@ -17,7 +17,7 @@ export class MembersRepository {
 
   // 현재 미팅방과 유저(나) 찾기 
   existingMember = async (meetingId, checkUserId) => {
-    try{
+    try {
 
       const member = await prisma.members.findFirst({
         where: {
@@ -25,13 +25,13 @@ export class MembersRepository {
           userId: +checkUserId,
         }
       })
-  
+
       // async 에서 return을 사용하면 해당 값을 가지고 있는 새로운 promise 객체를 생성
       return member;
 
-    } catch(err) {
+    } catch (err) {
       console.error("알 수 없는 에러", err);
     }
-    
+
   }
 }
