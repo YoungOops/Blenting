@@ -5,7 +5,7 @@ const url = new URLSearchParams(location.search);
 
 const roomId = url.get('roomId');
 
-const meetingSocket = getSocket('meeting',roomId)
+const meetingSocket = getSocket('meeting', roomId)
 
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
@@ -47,33 +47,38 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
   //4번
   /** "서버로부터" 'entry' 이벤트를 받으면,
    * 새로운 사용자가 입장했음을 알리는 메시지를 화면에 표시합니다. */
-  meetingSocket.on('meeting entry', (data) => {
+  meetingSocket.on('entry', (data) => {
     try {
+      const meetingId = data.meetingId;
       console.log(`${data.me} 미팅방 입장 확인`)
       console.log(data);
-      const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
-      item.textContent = data.me + '님이 meeting방에 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
-      messages.appendChild(item); // 'li' 요소를 messages 리스트에 추가합니다.
-      messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 
-      /** 사용자 목록을 업데이트합니다. */
-      userList.innerHTML = ''; // 기존 목록을 지우고 새로 시작합니다.
+      if (meetingId === roomId) {
 
-      // 서버에서 전달받은 사용자 배열을 순회합니다.
-      data.users.forEach((e) => {
-        const user = document.createElement('li'); // 각 사용자에 대한 'li' 요소를 생성합니다.
-        user.textContent = e; // 'li' 요소에 사용자 ID를 텍스트로 추가합니다.
-        userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
-      });
+        const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
+        item.textContent = data.me + '님이 meeting방에 입장 하였습니다.'; // 'li' 요소에 텍스트를 추가합니다.
+        messages.appendChild(item); // 'li' 요소를 messages 리스트에 추가합니다.
+        messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
 
+        /** 사용자 목록을 업데이트합니다. */
+        userList.innerHTML = ''; // 기존 목록을 지우고 새로 시작합니다.
+
+        // 서버에서 전달받은 사용자 배열을 순회합니다.
+        data.users.forEach((e) => {
+          console.log("e 확인", e)
+          const user = document.createElement('li'); // 각 사용자에 대한 'li' 요소를 생성합니다.
+          user.textContent = e; // 'li' 요소에 사용자 ID를 텍스트로 추가합니다.
+          userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
+        });
+      }
     } catch (error) {
-      console.error('meeting entry 에러', error);
+      console.error('entry 에러', error);
     }
 
   });
 
   /** 서버로부터 'exit' 이벤트를 받으면 사용자의 퇴장 메시지를 화면에 표시합니다. */
-  meetingSocket.on('meeting exit', (data) => {
+  meetingSocket.on('exit', (data) => {
     try {
       const item = document.createElement('li'); // 새로운 'li' 요소를 생성합니다.
       item.textContent = data.me + '님이 퇴장 하였습니다.'; // 퇴장 메시지를 설정합니다.
