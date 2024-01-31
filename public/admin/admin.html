@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>관리자님 환영합니다.</title>
+    <link rel="stylesheet" href="/admin/css/admin.style.css" />
+  </head>
+  <body>
+    <h1>관리자님 환영합니다.</h1>
+    <!-- html 폼 컨트롤 <select> 드롭다운 만들기  -->
+    <form id="filterForm">
+      <select name="filter">
+        <option value="">filter</option>
+        <option value="height">height</option>
+        <option value="figure">figure</option>
+        <option value="want1">want1</option>
+        <option value="want2">want2</option>
+        <option value="want3">want3</option>
+        <option value="mbti">MBTI</option>
+        <option value="nickName">NickName</option>
+
+        <option value="ticket">Ticket</option>
+        <option value="reportCount">ReportCount</option>
+        <option value="reportPoint">ReportPoint</option>
+        <option value="meetingCount">MeetingCount</option>
+      </select>
+      <!-- 추가 필터링 옵션 ...?-->
+      <button type="submit">검색</button>
+    </form>
+
+    <!-- <table>: 테이블 생성 -->
+    <table id="usersTable">
+      <!-- <thead>: 테이블의 헤더 부분을 정의, 주로 열 제목을 포함 -->
+      <thead>
+        <!-- <tr>: 테이블 행(table row)을 정의 -->
+        <tr>
+          <!-- <th>: 테이블 헤더 셀을 정의 행 또는 열의 제목 정보를 포함 -->
+          <th>ID</th>
+          <th>height</th>
+          <th>figure</th>
+          <th>want1</th>
+          <th>want2</th>
+          <th>want3</th>
+          <th>MBTI</th>
+          <th>Ticket</th>
+          <th>Nick <br />Name<br /></th>
+          <th>Report <br />Count<br /></th>
+          <th>Report <br />Point<br /></th>
+          <th>Meeting <br />Count<br /></th>
+        </tr>
+      </thead>
+      <!-- 테이블의 본문 부분을 정의합니다. 실제 데이터 행을 포함 -->
+      <tbody>
+        <!-- 여기에 서버로부터 받은 유저 데이터를 표시합니다 -->
+      </tbody>
+    </table>
+
+    <script src="/admin/js/admin.app.js"></script>
+  </body>
+</html>

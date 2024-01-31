@@ -15,17 +15,6 @@ export class UsersController {
       next(err);
     }
   };
-  /** 유저 전체조회 */
-  getAllProfiles = async (req, res, next) => {
-    try {
-      // 서비스 계층에 구현된 findUserById 사용
-      const user = await this.usersService.findAllUsers();
-
-      return res.status(200).json(user);
-    } catch (err) {
-      next(err);
-    }
-  };
 
   updateProfile = async (req, res, next) => {
     try {
@@ -66,18 +55,6 @@ export class UsersController {
   deleteUser = async (req, res, next) => {
     try {
       const { userId } = req.user;
-
-      const deleteUser = await this.usersService.deleteUserById(userId);
-
-      return res.status(200).json(deleteUser);
-    } catch (err) {
-      next(err);
-    }
-  };
-
-  deleteUserByAdmin = async (req, res, next) => {
-    try {
-      const { userId } = req.body;
 
       const deleteUser = await this.usersService.deleteUserById(userId);
 

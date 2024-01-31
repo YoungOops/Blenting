@@ -28,15 +28,10 @@ export class UsersRepository {
   };
 
   readOneById = async (userId) => {
+    console.log('🚀 ~ UsersRepository ~ readOneById= ~ userId:', userId);
     const findUser = await prisma.Users.findUnique({
       where: { id: userId },
     });
-    return findUser;
-  };
-
-  /** 유저 전체 조회 */
-  readAll = async () => {
-    const findUser = await prisma.Users.findMany();
     return findUser;
   };
 
@@ -51,6 +46,38 @@ export class UsersRepository {
   deleteOneById = async (userId) => {
     const deleteUser = await prisma.Users.delete({
       where: { id: userId },
+    });
+    return deleteUser;
+  };
+
+  /* 유저 전체 조회 */
+  readAll = async () => {
+    const findUser = await prisma.Users.findMany({
+      //include로 연결된 테이블의 데이터 불러오기.
+      include: { Auths: true },
+    });
+    return findUser;
+  };
+  //filtering
+  readFiltering = async (filterOptions) => {
+    const findUser = await prisma.Users.findMany({
+      //include로 연결된 테이블의 데이터 불러오기.
+      where: filterOptions,
+      include: { Auths: true },
+    });
+    return findUser;
+  };
+  //여기서 parseInt(userId, 10)는 userId를 10진수 정수로 변환합니다.
+  readOne = async (userId) => {
+    const findUser = await prisma.Users.findUnique({
+      where: { id: +userId }, // 문자열 userId를 숫자로 변환1
+    });
+    return findUser;
+  };
+
+  deleteOne = async (userId) => {
+    const deleteUser = await prisma.Users.delete({
+      where: { id: parseInt(userId, 10) }, // 문자열 userId를 숫자로 변환2
     });
     return deleteUser;
   };
