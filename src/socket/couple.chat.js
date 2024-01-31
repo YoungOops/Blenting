@@ -1,9 +1,13 @@
 import { MessagesRepository } from '../repositories/messages.repository.js';
+import {MeetingsRepository } from '../repositories/meetings.repository.js';
+import { MembersRepository } from '../repositories/members.repository.js';
 import { prisma } from '../utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 const messagesRepository = new MessagesRepository();
+const meetingsRepository = new MeetingsRepository();
+const membersRepository = new MembersRepository();
 //2번
 let users = new Map();
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
@@ -11,22 +15,27 @@ let users = new Map();
 export const coupleHandleChatEvent = async (io, socket) => {
   try {
 
-    const existCouples = await prisma.meetings.findMany({
-      where: {
-        type:'COUPLE'
-      }
-    });
-    if(!existCouples) {
-      await prisma.meetings.create({
-        data:{},
-      })
-    }
+    // 채팅방 타입
+    const type = 'COUPLE';
+    // 채팅방 정원
+    const maxCoupleCapacity = 2;
 
-    const couple = await prisma.meetings.findFirst({
-      where:{
-        type: 'COUPLE',
-      }
-    })
+    // 그룹 타입의 채팅방의 id, members의 userId
+    const coupleAndUser = await meetingsRepository.existMeetingsAndUsers(type);
+
+    // 정원이 안 찬 소개팅방
+    let couple;
+
+    // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
+    if (!coupleAndUser || coupleAndUser.every(couple => couple.Members.length >= maxCoupleCapacity)) {
+
+      await meetingsRepository.createMeeting();
+      
+    } else {
+      // find 조건을 만족하는 첫 번째를 반환
+      couple = coupleAndUser.find(user => user.Members.length < maxCoupleCapacity);
+
+    }
 
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id
@@ -62,6 +71,17 @@ export const coupleHandleChatEvent = async (io, socket) => {
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
     users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
+    
+    // 현재 소개팅방과 유저(나) 찾기
+    const existingMember = await membersRepository.existingMember(couple.id, checkUser.id);
+
+    if (!existingMember) {
+      // 중복되지 않은 경우에만 맴버에 추가
+      await membersRepository.createMember(meeting.id, checkUser.id);
+
+    }
+    
+    
     //3번
     io.emit('couple entry', {
       id: socket.decodedUserId,

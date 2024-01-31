@@ -1,5 +1,10 @@
 import { coupleSocket } from './index.js';
 
+// const url = new URLSearchParams(location.search);
+// const roomId = url.get('roomId');
+
+// const coupleSocket = getSocket('couple', roomId);
+
 
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
