@@ -62,7 +62,7 @@ export class MeetingsController {
 
     // socket 존재하는 미팅방(group) 찾고 가져오기 
     findAndGetMeeting = async (req, res) => {
-        const { type } = req.headers;
+        const { type } = req.headers; //함수마다 넣어주기
         try {
 
             const meeting = await this.meetingsService.findAndGetMeeting(type);

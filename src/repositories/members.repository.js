@@ -30,7 +30,7 @@ export class MembersRepository {
       return member;
 
     } catch(err) {
-      console.err("알 수 없는 에러", err);
+      console.error("알 수 없는 에러", err);
     }
     
   }
