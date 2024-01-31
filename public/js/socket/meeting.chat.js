@@ -1,5 +1,11 @@
-import { meetingSocket } from './index.js';
+import { getSocket } from './index.js';
 
+// 2024 01 31 주소에 있는 퀘리스트링으로 넘어온 roomId를 받아서 getSocket에 파라미터로 넘겨주기
+const url = new URLSearchParams(location.search);
+
+const roomId = url.get('roomId');
+
+const meetingSocket = getSocket('meeting',roomId)
 
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
