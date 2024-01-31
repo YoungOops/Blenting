@@ -40,4 +40,7 @@ signinSubmit.addEventListener('click', async (event) => {
     alert('로그인 실패');
     return;
   }
+
+  window.location.href = 'http://localhost:3000/main.html';
+
 });
