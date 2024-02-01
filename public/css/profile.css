@@ -4,18 +4,18 @@ body {
   align-items: center;
 }
 
-.signinDataBox {
+.profileDataBox {
   display: grid;
   grid-gap: 15px;
   grid-template-columns: 1fr 3fr;
-  grid-template-rows: repeat(2);
+  grid-template-rows: repeat(11);
   font-size: 13px;
   text-transform: uppercase;
   font-weight: 600;
   align-items: center;
 }
 
-.signinBox {
+.profileBox {
   margin-top: 25px;
   margin-bottom: 25px;
   padding: 25px;
@@ -26,9 +26,34 @@ body {
   border: solid 2px #e6a4b4;
 }
 
-.signinDataChoice {
+.profileDataChoiceMBTI {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: repeat(2);
+  align-items: center;
+  height: 30px;
+  width: 100%;
+}
+
+.profileDataChoiceHeight {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  height: 30px;
+  width: 100%;
+}
+
+.profileDataChoiceFigure {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  height: 30px;
+  width: 100%;
+}
+
+.profileDataChoiceWant {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   align-items: center;
   height: 30px;
   width: 100%;
@@ -49,8 +74,8 @@ body {
   grid-row-end: 7;
 }
 
-.signinSubmit {
-  padding: 6px 9px;
+.profileSubmit {
+  padding: 6px 6px;
   background-color: #f3d7ca;
   border: 0;
   border-radius: 10px;
