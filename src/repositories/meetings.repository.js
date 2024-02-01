@@ -158,6 +158,25 @@ export class MeetingsRepository {
   }
 
 
+  // 타입에 맞는 해당 채팅방의 멤버 찾기
+  existUsersInMeeting = async (meetingId) => {
+
+    return await prisma.meetings.findUnique({
+      where: {
+        id: +meetingId,
+      },
+      select: {
+        id: true,
+        Members: {
+          select:{
+            userId: true,
+          },
+        },
+      },
+    });
+  }
+
+
 
 
 
