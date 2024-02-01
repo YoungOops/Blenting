@@ -49,10 +49,6 @@ export class AuthController {
 
       const result = await this.authService.signin(signinData);
 
-      // 클라이언트로 전달
-      res.header('accessToken', result);
-      console.log('토큰 헤더 전송', result);
-
       return res.status(200).json({
         accessToken: 'Bearer ' + result,
       });

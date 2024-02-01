@@ -5,6 +5,7 @@ const heightEnum = {
   CASE3: 'Case3',
   CASE4: 'Case4',
   CASE5: 'Case5',
+  CASE6: 'Case6',
 };
 const genderEnum = {
   MALE: 'Male',

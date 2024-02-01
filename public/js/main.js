@@ -1,4 +1,4 @@
-import { ClickMatchingButton } from "./socket/index.js";
+import { ClickMatchingButton } from './socket/index.js';
 
 // 버튼 클릭 이벤트 리스너 등록
 const signinButton = document.getElementById('signin');
@@ -8,22 +8,24 @@ const signoutButton = document.getElementById('signout');
 const profileButton = document.getElementById('profile');
 const accessToken = localStorage.getItem('accessToken');
 
-signupButton.addEventListener('click',() => {
-  window.location.href = "http://localhost:3000/signup.html"
-})
+signupButton.addEventListener('click', () => {
+  window.location.href = server + '/signup.html';
+});
 
 signinButton.addEventListener('click', () => {
-
-  window.location.href = "http://localhost:3000/signin.html"
-})
+  window.location.href = server + '/signin.html';
+});
 
 signoutButton.addEventListener('click', () => {
   localStorage.removeItem('accessToken');
-  window.location.href = "http://localhost:3000/main.html";
-})
+  window.location.href = server + '/main.html';
+});
+
+profileButton.addEventListener('click', () => {
+  window.location.href = server + '/profile.html';
+});
 
 document.addEventListener('DOMContentLoaded', () => {
-
   if (accessToken) {
     signupButton.style.display = 'none';
     signinButton.style.display = 'none';
@@ -37,14 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     profileButton.style.display = 'none';
     matchingButton.style.display = 'none';
   }
-})
-
-matchingButton.addEventListener('click', () => {
-if(!accessToken){
-  alert('로그인이 필요합니다.');
-  return;
-}
-  ClickMatchingButton();
 });
 
-
+matchingButton.addEventListener('click', () => {
+  if (!accessToken) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+  ClickMatchingButton();
+});

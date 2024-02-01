@@ -47,5 +47,5 @@ signinSubmit.addEventListener('click', async (event) => {
     return;
   }
 
-  window.location.href = 'http://localhost:3000/admin/adminMain.html';
+  window.location.href = server + '/admin/adminMain.html';
 });
