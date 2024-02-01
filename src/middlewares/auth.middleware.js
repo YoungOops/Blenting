@@ -11,9 +11,23 @@ export class AuthMiddleware {
   // isAuth 미들웨어 함수를 export
   isAuth = async (req, res, next) => {
     //요청 헤더s에서 'authorization' 항목을 추출합니다.
-    const { authorization } = req.headers;
+    const { authorization, Authorization } = req.headers;
+    console.log(
+      '🚀 ~ AuthMiddleware ~ isAuth= ~ authorization:',
+      authorization,
+    );
+    console.log(
+      '🚀 ~ AuthMiddleware ~ isAuth= ~ Authorization:',
+      Authorization,
+    );
+
     // 'authorization' 헤더를 공백을 기준으로 분리하여 authType과 authToken을 구합니다.
     const [authType, authToken] = (authorization || '').split(' ');
+    console.log(
+      '🚀 ~ AuthMiddleware ~ isAuth= ~ authType, authToken:',
+      authType,
+      authToken,
+    );
     // authToken이 없거나 authType이 'Bearer'가 아닌 경우 에러를 발생시킵니다.
     if (!authToken || authType !== 'Bearer') {
       const error = new Error('로그인 후 이용 가능한 기능입니다.');
@@ -36,6 +50,7 @@ export class AuthMiddleware {
   isAdmin = async (req, res, next) => {
     const { authorization } = req.headers;
     const [authType, authToken] = (authorization || '').split(' ');
+    console.log(authType, authToken, '!@@@@@@@@@@@@@');
     if (!authToken || authType !== 'Bearer') {
       const error = new Error('로그인 후 이용 가능한 기능입니다.');
       error.status = 401;
@@ -49,6 +64,7 @@ export class AuthMiddleware {
 
       if (role !== 'ADMIN') {
         const error = new Error('관리자 권한이 없습니다.');
+        console.log('관리자 권한이 없습니다.');
         error.status = 401;
         throw error;
       }

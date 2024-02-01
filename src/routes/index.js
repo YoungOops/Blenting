@@ -24,4 +24,7 @@ apiRouter.use('/user', usersRouter);
 // 결제
 apiRouter.use('/payment', paymentRouter);
 
+// 어드민
+apiRouter.use('/admin', adminRouter);
+
 export { apiRouter };
