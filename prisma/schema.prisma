@@ -33,6 +33,7 @@ enum height {
   CASE3
   CASE4
   CASE5
+  CASE6
 }
 
 enum figure {
@@ -79,10 +80,22 @@ enum role {
 
 //16가지 유형 4가지로 그룹별 간소화 https://post.naver.com/viewer/postView.naver?volumeNo=30661993&memberNo=7130658
 enum mbti {
-  SJ
-  SP
-  NF
-  NT
+  ESTJ
+  ESTP
+  ESFJ
+  ESFP
+  ENTJ
+  ENTP
+  ENFJ
+  ENFP
+  ISTJ
+  ISTP
+  ISFJ
+  ISFP
+  INTJ
+  INTP
+  INFJ
+  INFP
 }
 
 // 1:1 의 관계의 경우 서로의 외래키를 갖고 있으면 순환참조로 인해 모델 생성이나 삭제 시 순환적 종속성 때문에 문제 발생
