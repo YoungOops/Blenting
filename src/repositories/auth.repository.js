@@ -37,4 +37,13 @@ export class AuthRepository {
 
     return users;
   };
+
+  //관리자
+  readOneByEmailForAdmin = async (email) => {
+    const users = await prisma.Auths.findUnique({
+      where: { email: email, role: 'ADMIN' },
+    });
+
+    return users;
+  };
 }

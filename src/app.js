@@ -42,6 +42,10 @@ app.use(
   express.static(join(__dirname, '..', 'node_modules', 'socket.io', 'dist')),
 ); // Socket.io 클라이언트 라이브러리 제공
 
+/** 백오피스 admin 라우터 */
+// 이 동작은 페이지를 서빙하기 위한 것이므로, API 라우터와는 별개로 작동해야 합니다.
+app.use('/admin', express.static(join(__dirname, 'public', 'admin')));
+
 // 라우트를 설정합니다 meeting네임스페이스
 app.get('/meeting', (req, res) => {
   // 루트 경로에 대한 GET 요청 처리
@@ -54,13 +58,9 @@ app.get('/couple', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'index.html')); // 'index.html' 파일을 응답으로 전송
 });
 
-/** 백오피스 페이지 경로 설정 */
-app.get('/admin-secret', (req, res) => {
-  res.sendFile(join(__dirname, 'public', 'admin', 'admin.html'));
-});
-
 // 미들웨어를 설정합니다
 app.use('/api', apiRouter); // '/api' 경로로 들어오는 요청에 API 라우터 적용
+
 app.use(cookieParser()); // 쿠키 파싱
 app.use(LogMiddleware); // 로깅
 app.use(ErrorHandlingMiddleware);

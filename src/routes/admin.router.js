@@ -16,9 +16,12 @@ const authMiddleware = new AuthMiddleware();
 /** 관리자 회원 가입 */
 adminRouter.post('/adminSignup', adminController.signup);
 
+/** 로그인 API **/
+adminRouter.post('/adminSignin', adminController.signin);
+
 /** 관리자용 유저 전체 조회 */
 adminRouter.get(
-  '/allProfiles',
+  '/allUsers',
   authMiddleware.isAdmin,
   adminController.findAllUsers,
 );

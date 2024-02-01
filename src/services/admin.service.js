@@ -1,7 +1,11 @@
 import { UsersRepository } from '../repositories/users.repository.js';
+import { AuthRepository } from '../repositories/auth.repository.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export class AdminService {
   usersRepository = new UsersRepository();
+  authRepository = new AuthRepository();
 
   createAdminProfile = async (createAuthData) => {
     const { nickName, gender } = createAuthData;
@@ -11,6 +15,43 @@ export class AdminService {
     return {
       id: user.id,
     };
+  };
+
+  adminSignin = async (signinData) => {
+    const { email, password } = signinData;
+
+    const auth = await this.authRepository.readOneByEmail(email);
+    console.log(auth, '@@@@@@@@@@@@@@@@@@@@@@@');
+    if (!auth) {
+      const error = new Error('존재하지 않는 관리자 입니다.');
+      error.status = 401;
+      throw error;
+    }
+
+    const user = await this.usersRepository.readOneById(auth.userId);
+    console.log(auth, '@@@@@@@@@@@@@@@@@@@@@@@');
+    if (!user || user.role !== 'ADMIN') {
+      const error = new Error('존재하지 않는 관리자 입니다.');
+      error.status = 401;
+      throw error;
+    }
+
+    const matchPassword = await bcrypt.compare(password, auth.password);
+
+    if (!matchPassword) {
+      const error = new Error('패스워드가 일치하지 않습니다.');
+      error.status = 403;
+      throw error;
+    }
+    console.log('authService', auth);
+
+    return jwt.sign(
+      { authId: auth.id, userId: auth.userId },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '24h',
+      },
+    );
   };
 
   /** 유저 전체조회 */

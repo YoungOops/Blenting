@@ -38,6 +38,33 @@ export class AdminController {
     }
   };
 
+  // 로그인
+  signin = async (req, res, next) => {
+    try {
+      const signinData = req.body;
+
+      const isValidData = 'email' in signinData && 'password' in signinData;
+
+      if (!isValidData) {
+        const error = new Error('유효하지 않은 데이터입니다.');
+        error.status = 400;
+        throw error;
+      }
+
+      const result = await this.adminService.adminSignin(signinData);
+
+      // 클라이언트로 전달
+      res.header('accessToken', result);
+      console.log('토큰 헤더 전송', result);
+
+      return res.status(200).json({
+        accessToken: 'Bearer ' + result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
   /** 유저 전체 조회 */
   findAllUsers = async (req, res, next) => {
     try {
@@ -53,8 +80,9 @@ export class AdminController {
     try {
       // 클라이언트로부터 전달받은 쿼리 파라미터를 각 변수에 할당합니다.
       const {
-        figure,
         height,
+        gender,
+        figure,
         want1,
         want2,
         want3,
@@ -66,8 +94,9 @@ export class AdminController {
 
       // 필터링할 조건들을 객체로 구성합니다. 값이 존재하는 경우에만 필터 옵션에 추가합니다.
       const filterOptions = {
-        ...(figure && { figure }), // figure 파라미터가 있으면 figure로 필터링
         ...(height && { height }), // height 파라미터가 있으면 height로 필터링
+        ...(gender && { gender }), // figure 파라미터가 있으면 figure로 필터링
+        ...(figure && { figure }), // figure 파라미터가 있으면 figure로 필터링
         ...(want1 && { want1 }), // want1 파라미터가 있으면 want1로 필터링
         ...(want2 && { want2 }), // want1 파라미터가 있으면 want1로 필터링
         ...(want3 && { want3 }), // want1 파라미터가 있으면 want1로 필터링
@@ -79,7 +108,7 @@ export class AdminController {
         // ...(ticket && { ticket: parseInt(ticket) }),
       };
       console.log(
-        '🚀 ~ UsersController ~ getAllProfiles= ~ filterOptions:',
+        '🚀 ~ AdminController ~ filterUsers= ~ filterOptions:',
         filterOptions,
       );
 

@@ -15,7 +15,7 @@ signinSubmit.addEventListener('click', async (event) => {
   }
 
   try {
-    const response = await fetch(server + '/api/auth/signin', {
+    const response = await fetch(server + '/api/admin/adminSignin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -32,14 +32,20 @@ signinSubmit.addEventListener('click', async (event) => {
       alert(data.message);
       return;
     }
+    console.log(data);
+    // 관리자 권한 확인 절차를 추가합니다.
+    // if (!data.isAdmin) {
+    //   alert('관리자만 접근 가능합니다.');
+    //   return;
+    // }
 
     localStorage.setItem('accessToken', data.accessToken.split(' ')[1]);
-    alert('로그인 성공');
+    alert('관리자 로그인 성공');
   } catch (err) {
     console.log(err);
     alert('로그인 실패');
     return;
   }
 
-  window.location.href = 'http://localhost:3000/main.html';
+  window.location.href = 'http://localhost:3000/admin/adminMain.html';
 });
