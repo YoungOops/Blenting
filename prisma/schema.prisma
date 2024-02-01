@@ -39,7 +39,7 @@ enum height {
 enum figure {
   SLIM
   MEDIUM
-  PLMUP
+  PLUMP
   MUSCULAR
 }
 

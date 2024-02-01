@@ -28,10 +28,12 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
   form.addEventListener('submit', (e) => {
     try {
       e.preventDefault(); // 기본 이벤트 동작을 막습니다.
+
       // input 필드에 값이 있는지 확인합니다.
       if (input.value) {
-        meetingSocket.emit('meeting chat message', input.value); //'chat message' 이벤트와 메시지 내용을 서버로 전송합니다.
-        console.log('최초 클라이언트에서 서버로 메세지 이벤트');
+        //'chat message' 이벤트와 메시지 내용을 서버로 전송합니다.
+        meetingSocket.emit('meeting chat message', input.value);
+
         //샌드 후에 (엔터 치면) 공백이 되도록 한다.
         input.value = ''; // 메시지를 전송한 후 input 필드를 비웁니다.
       }
@@ -58,13 +60,13 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
 
         /** 사용자 목록을 업데이트합니다. */
         userList.innerHTML = ''; // 기존 목록을 지우고 새로 시작합니다.
-        console.log('entry data.users 확인 ', data.users);
+
         // 서버에서 전달받은 사용자 배열을 순회합니다.
         data.users.forEach((e) => {
-          console.log('e 확인', e);
+          console.log('e 확인', e.nickName);
           const user = document.createElement('li'); // 각 사용자에 대한 'li' 요소를 생성합니다.
           user.style = 'list-style-type: none';
-          user.textContent = e; // 'li' 요소에 사용자 ID를 텍스트로 추가합니다.
+          user.textContent = e.nickName; // 'li' 요소에 사용자 ID를 텍스트로 추가합니다.
           userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
         });
       }
@@ -86,11 +88,12 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
       // 사용자 목록을 업데이트합니다.
       userList.innerHTML = ''; // 기존 목록을 지우고 새로 시작합니다.
       console.log('exist data.users 확인 ', data.users);
+
       data.users.forEach((e) => {
         // 업데이트된 사용자 배열을 순회합니다.
         const user = document.createElement('li'); // 각 사용자에 대한 'li' 요소를 생성합니다.
         user.style = 'list-style-type: none';
-        user.textContent = e; // 'li' 요소에 사용자 ID를 텍스트로 추가합니다.
+        user.textContent = e.nickName; // 'li' 요소에 사용자 ID를 텍스트로 추가합니다.
         userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
       });
     } catch (error) {
@@ -100,9 +103,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
 
   // 서버로부터 'chat message' 이벤트를 받으면 메시지를 화면에 표시합니다.
   meetingSocket.on('meeting chat message', (msg) => {
-    const token = localStorage.getItem('accessToken');
     try {
-      console.log('db에 저장 후에 서버에서 보낸 메세지 이벤트');
       console.log('소켓 msg 확인', msg);
       const item = document.createElement('div'); // 새로운 'li' 요소를 생성합니다.
       item.innerHTML = `<div class="messageUserName">${msg.socketUser}</div><span class="messageText">${msg.message}</span>`;

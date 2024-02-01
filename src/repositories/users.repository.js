@@ -21,6 +21,7 @@ export class UsersRepository {
       data: {
         nickName,
         gender,
+        //어드민
         role: 'ADMIN',
       },
     });
@@ -67,17 +68,19 @@ export class UsersRepository {
     });
     return findUser;
   };
-  //admin 여기서 parseInt(userId, 10)는 userId를 10진수 정수로 변환합니다.
+
   readOne = async (userId) => {
     const findUser = await prisma.Users.findUnique({
-      where: { id: +userId }, // 문자열 userId를 숫자로 변환1
+      where: { id: +userId }, // 문자열 userId를 숫자로 변환
+      //아래 parseInt 방식과 같은 효과임.
     });
     return findUser;
   };
   //admin
   deleteOne = async (userId) => {
     const deleteUser = await prisma.Users.delete({
-      where: { id: parseInt(userId, 10) }, // 문자열 userId를 숫자로 변환2
+      //admin 여기서 parseInt(userId, 10)는 userId를 10진수 정수로 변환합니다.
+      where: { id: parseInt(userId, 10) },
     });
     return deleteUser;
   };

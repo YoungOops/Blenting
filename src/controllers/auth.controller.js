@@ -23,7 +23,7 @@ export class AuthController {
         throw error;
       }
 
-      const userProfile = await this.usersService.createProfile(createAuthData);
+      const userProfile = await this.usersService.getProfile(createAuthData);
       const userId = userProfile.id;
 
       const result = await this.authService.signup(userId, createAuthData);
