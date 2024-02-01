@@ -1,12 +1,12 @@
 import { MessagesRepository } from '../repositories/messages.repository.js';
-import { MeetingsRepository } from '../repositories/meetings.repository.js';
 import { MembersRepository } from '../repositories/members.repository.js';
 import { prisma } from '../utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 const messagesRepository = new MessagesRepository();
-const meetingsRepository = new MeetingsRepository();
 const membersRepository = new MembersRepository();
 //2번
 let users = new Map();
@@ -21,9 +21,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id
     //jwt 토큰
-    console.log('!@@@@@@@@@@@@@', socket.handshake.query.authorization);
     const token = socket.handshake.query.authorization;
-    console.log("토큰 확인", token)
 
     const meetingId = socket.handshake.query.roomId;
     console.log("meetingId 확인 ", meetingId);
@@ -38,6 +36,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
     const decoding = jwt.verify(token, process.env.JWT_SECRET);
     console.log("디코딩 확인 ", decoding)
     const decodedUserId = decoding.userId;
+
     const checkUser = await prisma.users.findUnique({
       //users 테이블에서 하나를 찾는 프리즈마 메서드 findUnique
       //where은 조건 : { id는 users 테이블의 id : user 는 위에 jwt디코드한거.userId }
@@ -49,55 +48,66 @@ export const meetingHandleChatEvent = async (io, socket) => {
       // 유저 데이터 없으면 에러를 날린다.
       throw new Error('User not found');
     }
+    const userId = checkUser.id;
     socket.user = { nickName: checkUser.nickName }; // => checkUser
-    console.log("소켓 우저 확인", socket.user)
+    console.log("소켓 유저 확인", socket.user)
+
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
+
     // 현재 미팅방과 유저(나) 찾기 
-    const existingMember = await membersRepository.existingMember(meetingId, checkUser.id);
+    console.log("meetingId, userId 확인 ", meetingId, userId);
+    const existingMember = await membersRepository.existingMember(meetingId, userId);
+    console.log("existingMember 확인", existingMember);
 
     if (!existingMember) {
       // 중복되지 않은 경우에만 맴버에 추가
-      await membersRepository.createMember(meetingId, checkUser.id);
+      await membersRepository.createMember(meetingId, userId);
 
     }
+    let existingMembers = await membersRepository.getExistingMembers(meetingId);
 
-
-    // 닉네임 가져오기
-    const nickNameInMeeting = await prisma.users.findUnique({
-      where: {
-        id:existingMember.userId
-      },
-      select: {
-        nickName: true,
-      }
-    })
-
-    console.log("existingMember 확인 ", existingMember);
+    console.log("existingMembers 확인 ", existingMembers);
 
     //users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
-    
-    users.set(existingMember, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
+
+    users.set(existingMembers, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
     console.log("users 확인", users);
+
+    let members = existingMembers.map(member => member.Users)
 
     //3번
     io.to(meetingId).emit('entry', {
       id: socket.decodedUserId,
-      me: socket.user.nickName,
-      meetingId: meetingId,
-      nickName: nickNameInMeeting,
-      users: Array.from(users.values()),
+       me: socket.user.nickName,
+       meetingId: meetingId,
+       users:members,
+     // users: Array.from(users.values()),
     }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log(`${socket.user.nickName} user connected meeting`);
+
     // 사용자의 연결이 끊어졌을 때 처리합니다.
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async() => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
       //users.delete(existingMember,socket.me);
-      users.delete(existingMember,nickNameInMeeting);
+
+      // 삭제를 위한 Members 아이디 가져오기
+     const deleteMember = await membersRepository.existingMember(meetingId, userId);
+      console.log(deleteMember)
+
+     // db에서 해당 인원 멤버에서 삭제
+      await membersRepository.deleteMember(deleteMember.id);
+
+      // 업데이트된 해당 방의 유저(닉네임)
+      existingMembers = await membersRepository.getExistingMembers(meetingId);
+      console.log("delete 후 existingMembers 확인", existingMembers)
+      
+
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
-      io.to(meetingId).emit('exit', { id: socket.id, me: socket.user.nickName,nickName:nickNameInMeeting, users: Array.from(users.values()) });
+      io.to(meetingId).emit('exit', { id: socket.id, me: socket.user.nickName, users: existingMembers.map(member => member.Users)/*Array.from(users.values())*/ });
       console.log(`${socket.user.nickName} user disconnected meeting`);
     });
+
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
     //특정 클라이언트에게만 메시지를 보내려면 socket.emit을 사용할 수 있습니다.
     /** 현재 서버와 모두가 연결이 되어있음, 챗 이벤트를 시작했을 때 어떠한 일을 할지 정의하는 코드 */
@@ -108,9 +118,9 @@ export const meetingHandleChatEvent = async (io, socket) => {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = checkUser.id;
-        // 미팅아이디는 위에서 이미 선언 함;
         const socketId = socket.id;
         const socketUser = socket.user.nickName;
+
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           userId,

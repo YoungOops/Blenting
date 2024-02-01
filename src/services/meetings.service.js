@@ -41,7 +41,7 @@ export class MeetingsService {
   // 그룹타입의 미팅방 찾기
   findAndGetMeeting = async (type) => {
 
-    // 2024 01 29 따로 빼서 수정하기 ex) 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
+    // 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
 
     //const maxMeetingCapacity = 6;
 
@@ -50,7 +50,7 @@ export class MeetingsService {
 
     // type을 가져올 시
     if (type === 'GROUP') {
-      maxMeetingCapacity = 2; // 테스트를 위한 2 설정 maxMeetingCapacity = 6
+      maxMeetingCapacity = 4; // 테스트를 위한 2 설정 maxMeetingCapacity = 6
 
     } else if (type === 'COUPLE') {
       maxMeetingCapacity = 2;
@@ -120,26 +120,6 @@ export class MeetingsService {
 
     return allLists;
   }
-
-  // getListById = async (listId) => {
-  //   return listsRepository.getListById(listId);
-  // }
-
-  // 리스트 수정
-  // updateListName = async (listId, listName) => {
-  //   const list = await this.meetingsRepository.findListById(listId);
-
-  //   if (!list) throw new Error('리스트가 존재하지 않습니다.');
-
-  //   await this.meetingsRepository.updateListName(listId, listName);
-
-  //   const updatedList = await this.meetingsRepository.findListById(listId);
-
-  //   return {
-  //     listId: updatedList.listId,
-  //     listName: updatedList.listName,
-  //   };
-  // }
 
 
   // 리스트 삭제
