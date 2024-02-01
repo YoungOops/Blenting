@@ -224,13 +224,15 @@ profileSubmit.addEventListener('click', async (event) => {
   }
 
   try {
+    const token = localStorage.getItem('accessToken');
     const response = await fetch(server + '/api/user/updateProfile', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        age: userAge,
+        age: +userAge,
         mbti: userEI + userSN + userTF + userJP,
         height: userHeight,
         figure: userFigure,
