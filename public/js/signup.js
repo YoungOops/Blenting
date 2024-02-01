@@ -57,6 +57,7 @@ signupSubmit.addEventListener('click', async (event) => {
     const data = await response.json();
 
     alert('회원가입 성공');
+    location.href = 'signin.html';
   } catch (err) {
     console.log(err);
     alert('회원가입 실패');
