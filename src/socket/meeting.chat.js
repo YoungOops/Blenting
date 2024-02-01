@@ -10,14 +10,14 @@ const meetingsRepository = new MeetingsRepository();
 const membersRepository = new MembersRepository();
 //2번
 let users = new Map();
-// 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기
+// 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기( members)
 // js : Map, Set 찾아보기
 
 
 
 export const meetingHandleChatEvent = async (io, socket) => {
   try {
-    
+
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id
     //jwt 토큰
@@ -53,8 +53,6 @@ export const meetingHandleChatEvent = async (io, socket) => {
     console.log("소켓 우저 확인", socket.user)
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
-    users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
-
     // 현재 미팅방과 유저(나) 찾기 
     const existingMember = await membersRepository.existingMember(meetingId, checkUser.id);
 
@@ -65,21 +63,39 @@ export const meetingHandleChatEvent = async (io, socket) => {
     }
 
 
+    // 닉네임 가져오기
+    const nickNameInMeeting = await prisma.users.findUnique({
+      where: {
+        id:existingMember.userId
+      },
+      select: {
+        nickName: true,
+      }
+    })
+
+    console.log("existingMember 확인 ", existingMember);
+
+    //users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
+    
+    users.set(existingMember, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
+    console.log("users 확인", users);
 
     //3번
     io.to(meetingId).emit('entry', {
       id: socket.decodedUserId,
       me: socket.user.nickName,
       meetingId: meetingId,
+      nickName: nickNameInMeeting,
       users: Array.from(users.values()),
     }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log(`${socket.user.nickName} user connected meeting`);
     // 사용자의 연결이 끊어졌을 때 처리합니다.
     socket.on('disconnect', () => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
-      users.delete(socket.me);
+      //users.delete(existingMember,socket.me);
+      users.delete(existingMember,nickNameInMeeting);
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
-      io.to(meetingId).emit('exit', { id: socket.id, me: socket.user.nickName, users: Array.from(users.values()) });
+      io.to(meetingId).emit('exit', { id: socket.id, me: socket.user.nickName,nickName:nickNameInMeeting, users: Array.from(users.values()) });
       console.log(`${socket.user.nickName} user disconnected meeting`);
     });
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
@@ -92,7 +108,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = checkUser.id;
-         // 미팅아이디는 위에서 이미 선언 함;
+        // 미팅아이디는 위에서 이미 선언 함;
         const socketId = socket.id;
         const socketUser = socket.user.nickName;
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장

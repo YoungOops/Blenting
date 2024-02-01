@@ -62,7 +62,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
 
         /** 사용자 목록을 업데이트합니다. */
         userList.innerHTML = ''; // 기존 목록을 지우고 새로 시작합니다.
-
+        console.log("entry data.users 확인 ", data.users);
         // 서버에서 전달받은 사용자 배열을 순회합니다.
         data.users.forEach((e) => {
           console.log("e 확인", e)
@@ -87,6 +87,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
 
       // 사용자 목록을 업데이트합니다.
       userList.innerHTML = ''; // 기존 목록을 지우고 새로 시작합니다.
+      console.log("exist data.users 확인 ", data.users);
       data.users.forEach((e) => {
         // 업데이트된 사용자 배열을 순회합니다.
         const user = document.createElement('li'); // 각 사용자에 대한 'li' 요소를 생성합니다.
