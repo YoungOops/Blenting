@@ -67,9 +67,10 @@ export const meetingHandleChatEvent = async (io, socket) => {
 
 
     //3번
-    io.emit('meeting entry', {
+    io.to(meetingId).emit('entry', {
       id: socket.decodedUserId,
       me: socket.user.nickName,
+      meetingId: meetingId,
       users: Array.from(users.values()),
     }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log(`${socket.user.nickName} user connected meeting`);
@@ -78,7 +79,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
       users.delete(socket.me);
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
-      io.emit('meeting exit', { id: socket.id, me: socket.user.nickName, users: Array.from(users.values()) });
+      io.to(meetingId).emit('exit', { id: socket.id, me: socket.user.nickName, users: Array.from(users.values()) });
       console.log(`${socket.user.nickName} user disconnected meeting`);
     });
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
@@ -101,7 +102,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
           msg,
         );
         // 메시지 저장 후 모든 클라이언트에게 메시지를 방송
-        io.emit('meeting chat message', { socketId, socketUser, message: msg }); // 메시지 형식을 객체로 변경
+        io.to(meetingId).emit('meeting chat message', { socketId, socketUser, message: msg }); // 메시지 형식을 객체로 변경
         console.log("socketId, socketUser 확인 ", socketId, socketUser)
         console.log("메세지 db에 저장 후 다시 클라이언트로 전송")
         console.log('message: ', msg);
