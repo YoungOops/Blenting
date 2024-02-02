@@ -1,7 +1,9 @@
 import { AuthService } from '../services/auth.service.js';
+import { UsersService } from '../services/users.service.js';
 
 export class AuthController {
   authService = new AuthService();
+  usersService = new UsersService();
 
   // 회원가입
   signup = async (req, res, next) => {
@@ -12,7 +14,8 @@ export class AuthController {
         'email' in createAuthData &&
         'password' in createAuthData &&
         'checkPassword' in createAuthData &&
-        'name' in createAuthData;
+        'nickName' in createAuthData &&
+        'gender' in createAuthData;
 
       if (!isValidData) {
         const error = new Error('유효하지 않은 데이터입니다.');
@@ -20,7 +23,10 @@ export class AuthController {
         throw error;
       }
 
-      const result = await this.authService.signup(createAuthData);
+      const userProfile = await this.usersService.createProfile(createAuthData);
+      const userId = userProfile.id;
+
+      const result = await this.authService.signup(userId, createAuthData);
 
       return res.status(201).json(result);
     } catch (err) {
@@ -42,7 +48,7 @@ export class AuthController {
       }
 
       const result = await this.authService.signin(signinData);
-      res.cookie('user', result);
+
       return res.status(200).json({
         accessToken: 'Bearer ' + result,
       });

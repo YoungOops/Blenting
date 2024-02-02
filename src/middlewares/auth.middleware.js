@@ -1,54 +1,77 @@
-/** 
-**[게시판 프로젝트] 사용자 인증 미들웨어 비즈니스 로직**
+import { UsersRepository } from '../repositories/users.repository.js';
+// jwt 토큰 가져오기
+import jwt from 'jsonwebtoken';
+// dotenv 가져오기
+import dotenv from 'dotenv';
+dotenv.config(); // 이거 넣어주고 쓰라고 해서 넣었음.
 
-1. 클라이언트로 부터 **쿠키(Cookie)**를 전달받습니다.
-2. **쿠키(Cookie)**가 **Bearer 토큰** 형식인지 확인합니다.
-3. 서버에서 발급한 **JWT가 맞는지 검증**합니다.
-4. JWT의 `userId`를 이용해 사용자를 조회합니다.
-5. `req.user` 에 조회된 사용자 정보를 할당합니다.
-6. 다음 미들웨어를 실행합니다.
-*/
+export class AuthMiddleware {
+  UsersRepository = new UsersRepository();
 
-import jwt from "jsonwebtoken";
-import { prisma } from "../utils/prisma/index.js";
+  // isAuth 미들웨어 함수를 export
+  isAuth = async (req, res, next) => {
+    //요청 헤더s에서 'authorization' 항목을 추출합니다.
+    const { authorization, Authorization } = req.headers;
+    console.log(
+      '🚀 ~ AuthMiddleware ~ isAuth= ~ authorization:',
+      authorization,
+    );
+    console.log(
+      '🚀 ~ AuthMiddleware ~ isAuth= ~ Authorization:',
+      Authorization,
+    );
 
-// 함수 정의할 때 부터 익스포트 하는 이유는 정의하고 내보내는 과정 하나로 합칠 수 있음
-// 깔끔해지고 주요 기능 담당하는 것이 티가 잘 남.
-export default async function authMiddleware(req, res, next) {
-  try {
-    const { authorization } = req.cookies;
-    if (!authorization) throw new Error("토큰이 존재하지 않습니다.");
-
-    const [tokenType, token] = authorization.split(" ");
-
-    if (tokenType !== "Bearer") throw new Error("토큰 타입이 일치하지 않습니다.");
-
-    const decodedToken = jwt.verify(token, "customized_secret_key");
-    const userId = decodedToken.userId;
-
-    const user = await prisma.users.findFirst({
-      where: { userId: +userId }
-    });
-    if (!user) {
-      res.clearCookie("authorization");
-      throw new Error("토큰 사용자가 존재하지 않습니다.");
+    // 'authorization' 헤더를 공백을 기준으로 분리하여 authType과 authToken을 구합니다.
+    const [authType, authToken] = (authorization || '').split(' ');
+    console.log(
+      '🚀 ~ AuthMiddleware ~ isAuth= ~ authType, authToken:',
+      authType,
+      authToken,
+    );
+    // authToken이 없거나 authType이 'Bearer'가 아닌 경우 에러를 발생시킵니다.
+    if (!authToken || authType !== 'Bearer') {
+      const error = new Error('로그인 후 이용 가능한 기능입니다.');
+      error.status = 401; // HTTP 상태 코드 401을 에러 객체에 설정합니다.
+      throw error; // 에러를 던집니다.
     }
 
-    // req.user에 사용자 정보를 저장합니다.
-    req.user = user;
-
-    next();
-  } catch (error) {
-    res.clearCookie("authorization");
-
-    // 토큰이 만료되었거나, 조작되었을 때, 에러 메시지를 다르게 출력합니다.
-    switch (error.name) {
-      case "TokenExpiredError":
-        return res.status(401).json({ message: "토큰이 만료되었습니다." });
-      case "JsonWebTokenError":
-        return res.status(401).json({ message: "토큰이 조작되었습니다." });
-      default:
-        return res.status(401).json({ message: error.message ?? "비정상적인 요청입니다." });
+    //토큰 검증 시크릿키로 검증함
+    try {
+      //아래 유저는 페이로드 객체를 받아옴 jwt.verify() 함수 사용
+      //토큰이 유효하면 토큰의 페이로드(즉, 토큰에 담긴 데이터)를 반환
+      const user = jwt.verify(authToken, process.env.JWT_SECRET);
+      req.user = user; // 요청 객체에 user 정보를 추가합니다.
+      next();
+    } catch (err) {
+      return res.status(401).send('로그인 후 이용 가능한 기능입니다.');
     }
-  }
+  };
+
+  isAdmin = async (req, res, next) => {
+    const { authorization } = req.headers;
+    const [authType, authToken] = (authorization || '').split(' ');
+    console.log(authType, authToken, '!@@@@@@@@@@@@@');
+    if (!authToken || authType !== 'Bearer') {
+      const error = new Error('로그인 후 이용 가능한 기능입니다.');
+      error.status = 401;
+      throw error;
+    }
+
+    try {
+      const user = jwt.verify(authToken, process.env.JWT_SECRET);
+      req.user = user;
+      const { role } = await this.UsersRepository.readOneById(user.userId);
+
+      if (role !== 'ADMIN') {
+        const error = new Error('관리자 권한이 없습니다.');
+        console.log('관리자 권한이 없습니다.');
+        error.status = 401;
+        throw error;
+      }
+
+      next();
+    } catch (err) {
+      return res.status(401).send('로그인 후 이용 가능한 기능입니다.');
+    }
+  };
 }

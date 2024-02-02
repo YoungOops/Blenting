@@ -10,8 +10,8 @@ const meetingsRouter = Router();
 meetingsRouter.post('/', meetingsController.createMeeting);
 
 
-// 조회
-//meetingsRouter.get('/', meetingsController.getAllMeetings);
+// 남아있는 미팅방 조회
+meetingsRouter.get('/', meetingsController.findAndGetMeeting);
 
 
 

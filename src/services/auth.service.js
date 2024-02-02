@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 export class AuthService {
   authRepository = new AuthRepository();
 
-  signup = async (createAuthData) => {
+  signup = async (userId, createAuthData) => {
     const { password, checkPassword } = createAuthData;
 
     if (password !== checkPassword) {
@@ -16,11 +16,12 @@ export class AuthService {
 
     const hashPassword = await bcrypt.hash(password, 10);
     let hashCreateAuthData = {
+      userId: userId,
       ...createAuthData,
       password: hashPassword,
     };
 
-    const result = await this.authRepository.createUser(hashCreateAuthData);
+    const result = await this.authRepository.createAuth(hashCreateAuthData);
 
     return {
       ok: true,
@@ -49,8 +50,12 @@ export class AuthService {
     }
     console.log('authService', auth);
 
-    return jwt.sign({ userId: auth.userId }, process.env.JWT_SECRET, {
-      expiresIn: '24h',
-    });
+    return jwt.sign(
+      { authId: auth.id, userId: auth.userId },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '24h',
+      },
+    );
   };
 }

@@ -1,16 +1,15 @@
-import express from "express";
-import { AuthController } from "../controllers/auth.controller.js";
-import authMiddleware from "../middlewares/auth.middleware.js";
+import { Router } from 'express';
+import { AuthController } from '../controllers/auth.controller.js';
 
-const router = express.Router();
+const authRouter = Router();
 
 // 인스턴스 생성
 const authController = new AuthController();
 
 /** 로그인 API **/
-router.post("/login", authController.login);
+authRouter.post('/signin', authController.signin);
 
-/** 로그아웃 API **/
-router.post("/logout", authMiddleware, authController.logout);
+/** 회원가입 API **/
+authRouter.post('/signup', authController.signup);
 
-export default router;
+export { authRouter };

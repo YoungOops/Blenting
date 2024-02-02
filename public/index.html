@@ -14,19 +14,31 @@
 
   <body>
     <!-- io 라는 전역 함수 사용하도록 제일 위에 놨습니다.-->
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- CDN을 사용하여 socket.io-client 로드 -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <!-- <script src="socket.io/socket.io.js"></script> -->
     <div id="chat-container">
       <div id="chat-messages-container">
         <div id="chat-messages">
           <!-- messages list will be added here dynamically -->
         </div>
         <form id="form" action="">
+          <select
+            id="select"
+            class="form-select"
+            aria-label="Default select example"
+          >
+            <option selected>지목하기</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
           <input id="input" autocomplete="off" /><button>Send</button>
         </form>
       </div>
-      <div id="user-list-container">
+      <div id="user-list-container" style="padding: 10px">
         <div id="user-list-top">
-          <h5>접속자 목록</h5>
+          <h5>대화상대</h5>
         </div>
         <div id="user-list">
           <ul>
@@ -37,7 +49,10 @@
     </div>
     <!-- 얘네 socket.io 바로 밑에 놓으면 안 됩니다. 소켓이 먼저 로드 되기전에 얘네가 비동기적으로 먼저 실행되나봄 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/chat.js"></script>
+    <script src="./js/constants.js"></script>
+    <script type="module" src="/js/socket/meeting.chat.js"></script>
+    <script type="module" src="/js/socket/couple.chat.js"></script>
+    <script type="module" src="/js/socket/vote.js"></script>
     <!-- <script src="https://cdn.socket.io/4.2.0/socket.io.min.js"></script> -->
   </body>
 </html>

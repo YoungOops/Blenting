@@ -1,22 +1,47 @@
 import { prisma } from '../utils/prisma/index.js';
+import { UsersRepository } from '../repositories/users.repository.js';
 
-export class UsersRepository {
+export class AuthRepository {
+  usersRepository = new UsersRepository();
   constructor(prisma) {
     this.prisma = prisma;
   }
 
-  createUser = async (hashCreateAuthData) => {
-    const result = await prisma.Users.create({
-      data: {
-        ...hashCreateAuthData,
-      },
-    });
-    return result;
+  createAuth = async ({ email, password, userId }) => {
+    try {
+      const result = await prisma.Auths.create({
+        data: {
+          email,
+          password,
+          userId,
+        },
+      });
+      return result;
+    } catch (err) {
+      await this.usersRepository.deleteOneById(userId);
+      const result = await prisma.Auths.create({
+        data: {
+          email,
+          password,
+          userId,
+        },
+      });
+      return result;
+    }
   };
 
   readOneByEmail = async (email) => {
-    const users = await prisma.Users.findUnique({
+    const users = await prisma.Auths.findUnique({
       where: { email: email },
+    });
+
+    return users;
+  };
+
+  //관리자
+  readOneByEmailForAdmin = async (email) => {
+    const users = await prisma.Auths.findUnique({
+      where: { email: email, role: 'ADMIN' },
     });
 
     return users;
