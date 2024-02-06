@@ -9,20 +9,20 @@ const profileButton = document.getElementById('profile');
 const accessToken = localStorage.getItem('accessToken');
 
 signupButton.addEventListener('click', () => {
-  window.location.href = server + '/signup.html';
+  window.location.href = '/signup.html';
 });
 
 signinButton.addEventListener('click', () => {
-  window.location.href = server + '/signin.html';
+  window.location.href = '/signin.html';
 });
 
 signoutButton.addEventListener('click', () => {
   localStorage.removeItem('accessToken');
-  window.location.href = server + '/main.html';
+  window.location.href = '/main.html';
 });
 
 profileButton.addEventListener('click', () => {
-  window.location.href = server + '/profile.html';
+  window.location.href = '/profile.html';
 });
 
 document.addEventListener('DOMContentLoaded', () => {

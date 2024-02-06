@@ -14,7 +14,7 @@ const ClickMatchingButton = async () => {
     // 3. 타입에 따른 옵션 넣어서 요청하기
 
     // 남아있는 채팅방 확인 후 조건에 따라 생성 api
-    const url = server + '/api/meetings';
+    const url = '/api/meetings';
     const option = {
       method: 'GET',
       headers: {
@@ -53,7 +53,7 @@ const ClickMatchingButton = async () => {
     console.log('현재 페이지 확인', window.location.href);
     // if (window.location.href !== 'http://localhost:3000/meeting') {
     //
-    window.location.href = server + `/meeting?roomId=${roomId}`;
+    window.location.href = `/meeting?roomId=${roomId}`;
     // }
 
     return roomId;
@@ -87,7 +87,7 @@ const getSocket = (meetingType, roomId) => {
   console.log('현재 페이지 확인', window.location.pathname);
   console.log('현재 페이지 확인', window.location.href);
 
-  const socket = io(server + `/${meetingType}`, {
+  const socket = io(`/${meetingType}`, {
     //path: '/meeting',// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
     query: {
       authorization: getUserInfo,
