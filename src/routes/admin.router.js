@@ -35,7 +35,7 @@ adminRouter.get(
 
 /** 유저 상세 조회 @@@@@@@@ 이거는 이렇게해도 되는지?*/
 adminRouter.get(
-  '/profile/:userId',
+  '/userDetail/:userId',
   authMiddleware.isAdmin,
   adminController.findProfile,
 );

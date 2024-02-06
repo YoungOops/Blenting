@@ -72,6 +72,7 @@ export class UsersRepository {
   readOne = async (userId) => {
     const findUser = await prisma.Users.findUnique({
       where: { id: +userId }, // 문자열 userId를 숫자로 변환
+      include: { Auths: true },
       //아래 parseInt 방식과 같은 효과임.
     });
     return findUser;
