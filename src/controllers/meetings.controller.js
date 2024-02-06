@@ -36,45 +36,47 @@ export class MeetingsController {
 
       //this.meetingsService.autoDeleteMeetingV2(/*newMeeting.id, newMeeting.createdAt*/);
       // 랜덤 질문, 지령, 주제 생성
-      this.autoCreateQuestion(newMeeting.id);
+      //this.autoCreateQuestion(newMeeting.id);
 
 // 리턴을 안하면 undefined를 반환, 프론트는 응답한 json을 갖고 작업
             /*return*/ res.status(201).json({
-                message: `채팅방이 생성 되었습니다. ${MeetingsController.setTimeoutSetting / 1000}초 후 삭제 됩니다.`,
-                newMeeting,
-                meetingId: newMeeting.id
-            });
-            console.log(`${newMeeting.id}번 미팅방 생성`);
-        } catch (err) {
-            //next(err);
-            console.log("에러확인 ", err)
-            res.status(500).json({ err: err.message })
-        }
+        message: `채팅방이 생성 되었습니다. ${MeetingsController.setTimeoutSetting / 1000}초 후 삭제 됩니다.`,
+        newMeeting,
+        meetingId: newMeeting.id
+      });
+      console.log(`${newMeeting.id}번 미팅방 생성`);
+    } catch (err) {
+      //next(err);
+      console.log("에러확인 ", err)
+      res.status(500).json({ err: err.message })
+    }
+  }
+
+  // runCronSchedule = async () => {
+  //     this.meetingsService.autoDeleteMeetingV2(this.newMeeting.id, newMeeting.createdAt);
+  // }
+
+
+
+  // socket 존재하는 미팅방(group) 찾고 가져오기 
+  findAndGetMeeting = async (req, res, next) => {
+    const { type } = req.query; //함수마다 넣어주기
+    const { userId } = req.user;
+
+    try {
+
+      const meeting = await this.meetingsService.findAndGetMeeting(type, userId);
+
+      res.status(200).json({
+        message: "미팅방이 존재합니다.",
+        meeting,
+      })
+
+    } catch (err) {
+      console.error("알 수 없는 에러, 관리자에게 문의하세요", err);
     }
 
-    // runCronSchedule = async () => {
-    //     this.meetingsService.autoDeleteMeetingV2(this.newMeeting.id, newMeeting.createdAt);
-    // }
-
-
-
-    // socket 존재하는 미팅방(group) 찾고 가져오기 
-    findAndGetMeeting = async (req, res) => {
-        const { type } = req.headers; //함수마다 넣어주기
-        try {
-
-            const meeting = await this.meetingsService.findAndGetMeeting(type);
-
-            res.status(200).json({
-                message: "미팅방이 존재합니다.",
-                meeting,
-            })
-
-        } catch (err) {
-            console.error("알 수 없는 에러, 관리자에게 문의하세요", err);
-        }
-
-    }
+  }
 
 
 
