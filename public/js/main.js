@@ -46,5 +46,5 @@ matchingButton.addEventListener('click', () => {
     alert('로그인이 필요합니다.');
     return;
   }
-  ClickMatchingButton();
+  ClickMatchingButton('GROUP');
 });
