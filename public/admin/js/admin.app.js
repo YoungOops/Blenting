@@ -50,8 +50,19 @@ document.addEventListener('DOMContentLoaded', function () {
   fetchAllUsers();
   initializeDropdownFilters();
 });
-// fetchFilteredUsers();
 
+// function adminTitle() {
+//   document.addEventListener('DOMContentLoaded', function () {
+//     // 로컬 스토리지에서 닉네임을 가져옵니다.
+//     const adminNickName = localStorage.getItem('adminNickName'); // 환영 메시지를 업데이트합니다.
+//     if (adminNickName) {
+//       document.getElementById(
+//         'welcomeMessage',
+//       ).textContent = `${adminNickName}님 안녕하세요`;
+//     }
+//   });
+// }
+// console.log('🚀 ~ adminTitle ~ data:', data);
 function setupDropdownEventListeners() {
   const dropdowns = document.querySelectorAll('select'); // 모든 select 요소를 선택
   dropdowns.forEach(function (dropdown) {
@@ -77,7 +88,7 @@ function addDropdownOptions() {
 1. 함수는 dropdownId와 options 두 개의 매개변수를 받습니다.
 2. dropdownId는 드롭다운 메뉴의 ID를 나타내고, options는 드롭다운에 추가할 옵션들을 나타냅니다.
 3. 함수 내부에서는 document.getElementById(dropdownId)를 사용하여 해당 ID를 가진 드롭다운 요소를 선택합니다.
-4. 그 다음에는 선택된 드롭다운 요소의 innerHTML 속성을 사용하여 새로운 옵션을 추가합니다. 여기서는 기본값으로 "All" 옵션을 추가하고, 그 뒤에 options를 추가합니다.
+4. 그 다음에는 선택된 드롭다운 요소의 innerHTML 속성을 사용하여 새로운 옵션을 추가합니다. 기본값으로 "All" 옵션을 추가하고, 그 뒤에 options를 추가합니다.
 필터를 거치지 않은 값은 그냥 null로 받아 올 수 있게 해줬습니다. */
 function addOptionsToDropdown(dropdownId, options) {
   const selectElement = document.getElementById(dropdownId);
@@ -205,10 +216,17 @@ function updateTable(data) {
       <td>${user.want3}</td>
       <td>${user.mbti}</td>
       <td>${user.nickName}</td>
+      <td><button onclick="redirectToUserProfile(${user.id})">View Profile</button></td>
     `;
     tbody.appendChild(tr);
   });
 }
+// 상세 정보 페이지로 리디렉션하는 함수입니다.
+function redirectToUserProfile(userId) {
+  // 여기에서는 실제 상세 페이지의 URL은 프로젝트 상황에 맞게 설정해야 합니다.
+  window.location.href = `/admin/userDetail.html?userId=${userId}`;
+}
+
 function initializeDropdownFilters() {
   // 드롭다운을 초기화하고, 드롭다운 옵션을 추가합니다.
   addDropdownOptions(); // 드롭다운 옵션을 추가

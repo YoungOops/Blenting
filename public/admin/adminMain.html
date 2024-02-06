@@ -3,31 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>관리자님 환영합니다.</title>
-    <link rel="stylesheet" href="/admin/css/admin.style.css" />
+    <title id="adminTitle">환영합니다.</title>
+    <link rel="stylesheet" href="css/adminMain.style.css" />
   </head>
   <body>
-    <h1>관리자님 환영합니다.</h1>
+    <h2>관리자 페이지 입니다.</h2>
     <!-- 폼태그 안에는 <select>라는 드롭다운이 있다. -->
-    <form id="filterForm">
-      <!-- <select name="filter">
-        <option value="">filter</option> ㄷ디폴트 값
-        <option value="height">height</option>
-        <option value="figure">figure</option>
-        <option value="want1">want1</option>
-        <option value="want2">want2</option>
-        <option value="want3">want3</option>
-        <option value="mbti">MBTI</option>
-        <option value="nickName">NickName</option>
-
-        <option value="ticket">Ticket</option>
-        <option value="reportCount">ReportCount</option>
-        <option value="reportPoint">ReportPoint</option>
-        <option value="meetingCount">MeetingCount</option>
-      </select> -->
-      <!-- 추가 필터링 옵션 ...?-->
-      <!-- <button type="submit">검색</button> -->
-    </form>
+    <form id="filterForm"></form>
 
     <!-- <table>: 테이블 생성 -->
     <table id="usersTable">
@@ -85,6 +67,7 @@
           <!-- <th>Report <br />Count<br /></th>
           <th>Report <br />Point<br /></th>
           <th>Meeting <br />Count<br /></th> -->
+          <th>Button</th>
         </tr>
       </thead>
       <!-- 테이블의 본문 부분을 정의합니다. 실제 데이터 행을 포함 -->
