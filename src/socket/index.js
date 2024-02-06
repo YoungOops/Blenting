@@ -12,8 +12,8 @@ export default function setupSocket(server) {
   const io = new Server(server);
 
   // namespace 나누기 
-  const meeting = io.of('/meeting');
-  const couple = io.of('/couple');
+  const meeting = io.of('/meeting'); 
+  const couple = io.of('/couple'); 
 
 
 
@@ -33,8 +33,11 @@ export default function setupSocket(server) {
   });
 
   couple.on('connection', (socket) => {
+    console.log('------------------------------------');
     console.log('Couple Room Connection:', socket.rooms);
     console.log('Couple Socket Query:', socket.handshake.query);
+    console.log('------------------------------------');
+    
 
 
     //socket.join('coupleRoom');

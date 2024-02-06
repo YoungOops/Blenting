@@ -1,5 +1,5 @@
 import { MessagesRepository } from '../repositories/messages.repository.js';
-import {MeetingsRepository } from '../repositories/meetings.repository.js';
+import { MeetingsRepository } from '../repositories/meetings.repository.js';
 import { MembersRepository } from '../repositories/members.repository.js';
 import { prisma } from '../utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
@@ -15,34 +15,12 @@ let users = new Map();
 export const coupleHandleChatEvent = async (io, socket) => {
   try {
 
-    // 채팅방 타입
-    const type = 'COUPLE';
-    // 채팅방 정원
-    const maxCoupleCapacity = 2;
-
-    // 그룹 타입의 채팅방의 id, members의 userId
-    const coupleAndUser = await meetingsRepository.existMeetingsAndUsers(type);
-
-    // 정원이 안 찬 소개팅방
-    let couple;
-
-    // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
-    if (!coupleAndUser || coupleAndUser.every(couple => couple.Members.length >= maxCoupleCapacity)) {
-
-      await meetingsRepository.createMeeting();
-      
-    } else {
-      // find 조건을 만족하는 첫 번째를 반환
-      couple = coupleAndUser.find(user => user.Members.length < maxCoupleCapacity);
-
-    }
-
     // query 접근 시 handshake 사용 ex) socket.handshake.query.~~~
     console.log(socket.id); //socket.id
     //jwt 토큰
-    console.log('!@@@@@@@@@@@@@', socket.handshake.query.authorization);
     const token = socket.handshake.query.authorization;
-    console.log("토큰 확인", token)
+
+    const coupleId = socket.handshake.query.roomId;
 
 
     //jwt 가져옴,
@@ -53,7 +31,7 @@ export const coupleHandleChatEvent = async (io, socket) => {
      * 아래 코드에는 name 이라는 키와 JWT 토큰 값의 밸류가 객체로 감싸져 있음.
      */
     const decoding = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("디코딩 확인 ", decoding)
+    console.log("커플에서 디코딩 확인 ", decoding)
     const decodedUserId = decoding.userId;
     const checkUser = await prisma.users.findUnique({
       //users 테이블에서 하나를 찾는 프리즈마 메서드 findUnique
@@ -67,34 +45,65 @@ export const coupleHandleChatEvent = async (io, socket) => {
       throw new Error('User not found');
     }
     socket.user = { nickName: checkUser.nickName }; // => checkUser
+    const userId = checkUser.id;
     console.log("소켓 우저 확인", socket.user)
     // socket.user 객체에 사용자의 이메일을 저장합니다.
     // socket.user = { email: user.email };
     users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
-    
+
     // 현재 소개팅방과 유저(나) 찾기
-    const existingMember = await membersRepository.existingMember(couple.id, checkUser.id);
+    console.log('coupleId, userId 확인', coupleId, userId);
+    const existingMember = await membersRepository.existingMember(coupleId, checkUser.id);
+    console.log("커플에서 existingMember 확인1", existingMember);
 
     if (!existingMember) {
       // 중복되지 않은 경우에만 맴버에 추가
-      await membersRepository.createMember(meeting.id, checkUser.id);
+      await membersRepository.createMember(coupleId, checkUser.id);
 
     }
-    
-    
+    let existingMembers = await membersRepository.getExistingMembers(coupleId);
+
+    console.log("커플에서 existingMembers 확인2", existingMembers);
+
+    let members = existingMembers.map(member => member.Users)
+
     //3번
-    io.emit('couple entry', {
+    io.to(coupleId).emit('entry', {
       id: socket.decodedUserId,
+      socketId: socket.id,
       me: socket.user.nickName,
-      users: Array.from(users.values()),
+      coupleId: coupleId,
+      users: members       // Array.from(users.values()),
     }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log(`${socket.user.nickName} user connected couple`);
     // 사용자의 연결이 끊어졌을 때 처리합니다.
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
-      users.delete(socket.me);
+      // users.delete(socket.me);
+
+      // 삭제를 위한 Members 아이디 가져오기
+      const deleteMember = await membersRepository.existingMember(coupleId, userId);
+      console.log('------------------------------------');
+      console.log('커플방에서 삭제를 위한 members 아이디 가져오기', deleteMember);
+      console.log('------------------------------------');
+
+      // db에서 해당 인원 멤버에서 삭제
+      await membersRepository.deleteMember(deleteMember.id);
+
+      // 업데이트된 해당 방의 유저(닉네임)
+      existingMembers = await membersRepository.getExistingMembers(coupleId);
+      console.log("delete 후 existingMembers 확인", existingMembers)
+
+      // 해당 방에 아무도 없으면 해당 방 삭제 // 2024 02 04 이게 필요할까?
+      if (existingMembers.length === 0) {
+        await meetingsRepository.deleteMeeting(coupleId);
+        console.log('------------------------------------');
+        console.log('아무도 없는 커플방 삭제');
+        console.log('------------------------------------');
+      }
+
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
-      io.emit('couple exit', { id: socket.id, me: socket.user.nickName, users: Array.from(users.values()) });
+      io.to(coupleId).emit('exit', { id: socket.id, me: socket.user.nickName, users: existingMembers.map(member => member.Users) });
       console.log(`${socket.user.nickName} user disconnected couple`);
     });
     //io.emit 함수를 사용하여 서버에 연결된 모든 클라이언트에게 이벤트를 방송하고 있습니다.
@@ -106,17 +115,18 @@ export const coupleHandleChatEvent = async (io, socket) => {
       try {
         // 임시로 설정된 사용자 ID와 미팅 ID, 실제 환경에서는 인증 시스템을 통해 얻어야 함
         const userId = checkUser.id;
-        const meetingId = couple.id;
         const socketId = socket.id;
         const socketUser = socket.user.nickName;
+
         // MessagesRepository를 이용하여 메시지를 데이터베이스에 저장
         const newMessage = await messagesRepository.createMessage(
           userId,
-          meetingId,
+          coupleId,
           msg,
         );
         // 메시지 저장 후 모든 클라이언트에게 메시지를 방송
-        io.emit('couple chat message', { socketId, socketUser, message: msg }); // 메시지 형식을 객체로 변경
+        io.to(coupleId).emit('couple chat message', { socketId, socketUser, message: msg }); // 메시지 형식을 객체로 변경
+        console.log("커플에서 socketId, socketUser 확인 ", socketId, socketUser)
         console.log('message: ', msg);
         // io.emit('chat message', socket.id + ' ' + msg); // 한 클라이언트가 말하면 모두에게 msg를 알림
       } catch (error) {

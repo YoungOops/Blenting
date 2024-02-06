@@ -3,16 +3,19 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { prisma } from '../utils/prisma/index.js';
+import { MeetingsService } from '../services/meetings.service.js';
 dotenv.config();
+
+const meetingsService = new MeetingsService();
 
 export const handleVoteEvent = async (io, socket) => {
 
     //socket.user = {name: socket.id};
 
+    const meetingId = socket.handshake.query.roomId;
 
     //jwt 토큰
     const token = socket.handshake.query.authorization;
-    console.log("vote토큰 확인", token)
 
     const decoding = jwt.verify(token, process.env.JWT_SECRET);
     console.log("vote디코딩 확인 ", decoding)
@@ -29,28 +32,23 @@ export const handleVoteEvent = async (io, socket) => {
         throw new Error('User not found');
     }
 
-    // 2024 01 29 미팅Id를 어떻게 가져오지?
-    // await prisma.members.findUnique({
-    //     where: {
-    //         userId: checkUser.id,
-    //     }
-    // })
-
+    const roomId = socket.handshake.query.roomId;
 
     // 클라이언트에서 온 이벤트 접수
     socket.on('vote', async (data) => {
         try {
             const socketId = socket.id;
-            const userId = checkUser.id; // 임시 (투표하는 유저) 유저 정보 받아 올 시 삭제
-            const meetingId = 1; // 임시
+            const userId = checkUser.id; // (투표하는 유저) 유저 정보 받아 올 시 삭제
 
-            console.log("select data 확인 ", data);
+            console.log('------------------------------------');
+            console.log('select data 확인 ', data);
+            console.log('------------------------------------');
 
             const newVote = await prisma.votes.create({
                 data: {
                     fromUser: { connect: { id: userId } },
                     toUser: { connect: { id: +data.option } },
-                    meeting: { connect: { id: meetingId } },
+                    meeting: { connect: { id: +roomId } },
                     isVote: true,
                 }
             })
@@ -62,8 +60,8 @@ export const handleVoteEvent = async (io, socket) => {
             // 해당 미팅방과 지목 받은 사람 나(현재 투표한 유저)를 기준으로 
             const votedMe = await prisma.votes.findFirst({
                 where: {
-                    meetingId: meetingId,
-                    toUserId: userId
+                    meetingId: +roomId,
+                    toUserId: +userId
                 },
                 select: {
                     id: true,
@@ -75,12 +73,12 @@ export const handleVoteEvent = async (io, socket) => {
 
             const fromUser = await prisma.users.findUnique({
                 where: { id: userId },
-                select: { nickName: true }
+                select: { id: true, nickName: true }
             })
 
             const toUser = await prisma.users.findUnique({
                 where: { id: +data.option },
-                select: { nickName: true }
+                select: { id: true, nickName: true }
             })
 
 
@@ -91,14 +89,31 @@ export const handleVoteEvent = async (io, socket) => {
             //votedMe가 null값이 아닐경우 
             if (votedMe?.toUserId == userId) {
 
-                io.emit('announce', { fromUserNickName, toUserNickName });
+                io.to(meetingId).emit('announce', { fromUser, toUser });
+
             }
 
             // 서버에서 클라이언트로 발송
-            io.emit('vote', { fromUserNickName, toUserNickName });
+            io.to(meetingId).emit('vote', { fromUserNickName, toUserNickName });
 
         } catch (err) {
             console.error("Error :", err);
         }
     })
+
+    // socket.on('create couple', async (data) => {
+    //     try {
+    //         const couple = await meetingsService.findAndGetMeeting('COUPLE');
+
+    //         //socket.join(couple.id);
+    //         await io.to(meetingId).emit('move couple', { couple });
+    //         console.log('------------------------------------');
+    //         console.log('소개팅 방 생성', couple.id)
+    //         console.log('------------------------------------');
+            
+    //     } catch (err) {
+    //         console.error('소개팅 방 생성 에러', err);
+    //     }
+    // })
+
 }
