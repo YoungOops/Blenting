@@ -1,8 +1,6 @@
 //import io from '/node_modules/socket.io-client/dist/socket.io.js'; // html에서 cdn으로 로드되므로 여기서 import하지않아도 됨
 
-// 조건을 만들기 위한 로직 필요
-// meetingCurrentPage = 'meeting'; // 임시
-// coupleCurrentPage = 'couple'; // 임시
+
 
 // 1.무언가 이벤트 발생하는 함수에서 파라미터로 타입 집어넣어 주기
 
@@ -13,7 +11,7 @@ const ClickMatchingButton = async (type) => {
 
     const token = localStorage.getItem('accessToken');
 
-
+    // get에서 무언가를 전달 하고 싶을 때 쿼리스트링 사용
     // 남아있는 채팅방 확인 후 조건에 따라 생성 api
     const url = `/api/meetings?type=${type}`;
     const option = {
@@ -38,21 +36,8 @@ const ClickMatchingButton = async (type) => {
     const roomId = MeetingInfo.meeting.id;
     console.log('클라이언트 roomId 확인', roomId, typeof roomId);
 
-
-
-
-    /*// 왜 안되는거여
-    // 'accessToken' 헤더의 값을 출력
-    const accessToken = response.headers.get('accessToken');
-    console.log('accessToken:', accessToken);
-
-    if (!accessToken) {
-      throw new Error('헤더에 토큰 없음');
-    }
-    console.log('클라이언트에서 토큰 확인', accessToken);
-
-    // 받아온 토큰 로컬스토리지에 저장
-    localStorage.setItem('accessToken', accessToken);*/
+    userGender = MeetingInfo.userGender;
+    console.log('userGender 확인',userGender)
 
 
     // 2. 받아온 파라미터로 if문, 타입이 GROUP, COUPLE인지 확인
@@ -62,12 +47,12 @@ const ClickMatchingButton = async (type) => {
 
     if (type === 'GROUP') {
       const meetingType = 'meeting';
-      window.location.href = server + `/meeting?meetingType=${meetingType}&roomId=${roomId}`;
+      window.location.href = `/meeting?meetingType=${meetingType}&roomId=${roomId}`;
 
     }
     else if (type === 'COUPLE') {
       const meetingType = 'couple'
-      window.location.href = server + `/couple?meetingType=${meetingType}&roomId=${roomId}`;
+      window.location.href = `/couple?meetingType=${meetingType}&roomId=${roomId}`;
     }
     return roomId;
   } catch (err) {
