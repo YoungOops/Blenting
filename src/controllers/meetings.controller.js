@@ -65,11 +65,12 @@ export class MeetingsController {
 
     try {
 
-      const meeting = await this.meetingsService.findAndGetMeeting(type, userId);
+      const { meeting, userGender } = await this.meetingsService.findAndGetMeeting(type, userId);
 
       res.status(200).json({
         message: "미팅방이 존재합니다.",
         meeting,
+        userGender,
       })
 
     } catch (err) {

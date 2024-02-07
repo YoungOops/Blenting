@@ -86,7 +86,7 @@ export class MeetingsService {
       console.log("방 생성");
       console.log('------------------------------------');
       meeting = await this.meetingsRepository.createMeeting(type);
-      return meeting;
+      return { meeting, userGender };
 
     } else {
       console.log('------------------------------------');
@@ -110,12 +110,12 @@ export class MeetingsService {
 
       if (meeting) {
         console.log('성별 조건을 거친 후 방 지정')
-        return meeting;
+        return { meeting, userGender };
       } else {
         console.log('성별 조건을 거친 후 방 생성')
         const newMeeting = await this.meetingsRepository.createMeeting(type);
 
-        return newMeeting;
+        return { newMeeting, userGender };
       }
 
 
