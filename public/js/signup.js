@@ -40,7 +40,7 @@ signupSubmit.addEventListener('click', async (event) => {
   }
 
   try {
-    const response = await fetch(server + '/api/auth/signup', {
+    const response = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',

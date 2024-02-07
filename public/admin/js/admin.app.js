@@ -112,7 +112,7 @@ function fetchAllUsers() {
     return; // 토큰이 없으면 함수를 종료합니다.
   }
   // 백엔드 서버에서 모든 사용자를 가져오는 GET 요청을 보냅니다.
-  fetch('http://localhost:3000/api/admin/allUsers', {
+  fetch('/api/admin/allUsers', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -167,7 +167,7 @@ function fetchFilteredUsers() {
 
   console.log('🚀 ~ fetchFilteredUsers ~ queryString:', queryString);
   // 필터링된 유저를 요청하는 URL을 구성합니다.
-  const url = `http://localhost:3000/api/admin/filterProfiles?${queryString}`;
+  const url = `/api/admin/filterProfiles?${queryString}`;
   // 서버로부터 필터링된 유저 데이터를 가져오고, 데이터가 있다면 테이블을 업데이트합니다.
   console.log(url); // URL을 콘솔에 출력합니다.
   fetch(url, {

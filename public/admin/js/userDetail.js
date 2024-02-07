@@ -13,7 +13,7 @@ function fetchUserProfile(userId) {
   const accessToken = localStorage.getItem('accessToken');
 
   // 해당 유저의 프로필 정보를 서버로부터 가져옵니다. (AdminController의 findProfile 메소드)
-  fetch(`http://localhost:3000/api/admin/userDetail/${userId}`, {
+  fetch(`/api/admin/userDetail/${userId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
