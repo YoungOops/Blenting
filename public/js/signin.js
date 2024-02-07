@@ -15,7 +15,7 @@ signinSubmit.addEventListener('click', async (event) => {
   }
 
   try {
-    const response = await fetch(server + '/api/auth/signin', {
+    const response = await fetch('/api/auth/signin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -41,5 +41,5 @@ signinSubmit.addEventListener('click', async (event) => {
     return;
   }
 
-  window.location.href = 'http://localhost:3000/main.html';
+  window.location.href = 'index.html';
 });
