@@ -221,7 +221,7 @@ model Votes {
 
   fromUser Users    @relation("fromUser", fields: [fromUserId], references: [id])
   toUser   Users    @relation("toUser", fields: [toUserId], references: [id])
-  meeting  Meetings @relation(fields: [meetingId], references: [id])
+  meeting  Meetings @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
   @@map("votes")
 }
