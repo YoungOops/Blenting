@@ -94,19 +94,18 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         // if(meetingSocket.id === data.socketId){
         // }
 
-        const myGender = data.users[data.users.length - 1].gender;
+
         // 나의 성별 확인
         data.users.forEach((e) => {
 
-         // if (e.gender !== e.gender) {
-            console.log("e확인", e)
-            // 2024 02 05
-            // 자신의 이름 추가 안함(구현 예정)
-            const option = document.createElement('option');
-            option.textContent = e.nickName;
-            option.value = e.id;
-            select.append(option);
-          //}
+          console.log("e.gender확인", e.gender)
+          // 2024 02 05
+          // 자신의 이름 추가 안함(구현 예정)
+          const option = document.createElement('option');
+          option.textContent = e.nickName;
+          option.value = e.id;
+          select.append(option);
+
         })
 
 
