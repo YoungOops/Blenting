@@ -36,8 +36,7 @@ const ClickMatchingButton = async (type) => {
     const roomId = MeetingInfo.meeting.id;
     console.log('클라이언트 roomId 확인', roomId, typeof roomId);
 
-    userGender = MeetingInfo.userGender;
-    console.log('userGender 확인',userGender)
+
 
 
     // 2. 받아온 파라미터로 if문, 타입이 GROUP, COUPLE인지 확인
