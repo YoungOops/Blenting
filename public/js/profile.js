@@ -225,7 +225,7 @@ profileSubmit.addEventListener('click', async (event) => {
 
   try {
     const token = localStorage.getItem('accessToken');
-    const response = await fetch(server + '/api/user/updateProfile', {
+    const response = await fetch('/api/user/updateProfile', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json;charset=utf-8',
@@ -249,7 +249,7 @@ profileSubmit.addEventListener('click', async (event) => {
     const data = await response.json();
 
     alert('프로필 작성 성공');
-    location.href = 'main.html';
+    location.href = 'index.html';
   } catch (err) {
     console.log(err);
     alert('프로필 작성 실패');
