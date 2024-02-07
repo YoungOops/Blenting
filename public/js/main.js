@@ -18,7 +18,7 @@ signinButton.addEventListener('click', () => {
 
 signoutButton.addEventListener('click', () => {
   localStorage.removeItem('accessToken');
-  window.location.href = '/main.html';
+  window.location.href = '/index.html';
 });
 
 profileButton.addEventListener('click', () => {

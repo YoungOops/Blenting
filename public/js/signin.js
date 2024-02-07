@@ -41,5 +41,5 @@ signinSubmit.addEventListener('click', async (event) => {
     return;
   }
 
-  window.location.href = 'main.html';
+  window.location.href = 'index.html';
 });
