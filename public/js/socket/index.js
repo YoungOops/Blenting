@@ -12,10 +12,10 @@ const ClickMatchingButton = async (type) => {
   try {
 
     const token = localStorage.getItem('accessToken');
-    
+
 
     // 남아있는 채팅방 확인 후 조건에 따라 생성 api
-    const url = server + `/api/meetings?type=${type}`;
+    const url = `/api/meetings?type=${type}`;
     const option = {
       method: 'GET',
       headers: {
@@ -64,7 +64,7 @@ const ClickMatchingButton = async (type) => {
       const meetingType = 'meeting';
       window.location.href = server + `/meeting?meetingType=${meetingType}&roomId=${roomId}`;
 
-    } 
+    }
     else if (type === 'COUPLE') {
       const meetingType = 'couple'
       window.location.href = server + `/couple?meetingType=${meetingType}&roomId=${roomId}`;
@@ -102,7 +102,7 @@ const getSocket = (meetingType, roomId) => {
   console.log('현재 페이지 확인', window.location.href);
 
 
-  socket = io(server + `/${meetingType}`, {
+  socket = io(`/${meetingType}`, {
     //path: '/meeting',// namespace 나누었을 시 어떤 namespace와 연결 할지 경로 설정  path 옵션 : 동일한 서버에 여러개의 네임스페이스 사용 시
     query: {
       authorization: getUserInfo,
