@@ -3,11 +3,11 @@ import { prisma } from '../utils/prisma/index.js';
 //const { List, Card } = db;
 export class MeetingsRepository {
   // 채팅방 생성
-  createMeeting = async () => {
+  createMeeting = async (type) => {
 
     const newMeeting = await prisma.meetings.create({
       data: {
-        /*type:type,*/
+        type:type,
       },
     });
     
@@ -95,8 +95,7 @@ export class MeetingsRepository {
 
   // 타입에 맞는 채팅방들 찾기  meeting.chat.js
   existMeetingsAndUsers = async (type) => {
-
-    return await prisma.meetings.findMany({
+    const members = await prisma.meetings.findMany({
       where: {
         type: type,
       },
@@ -105,10 +104,16 @@ export class MeetingsRepository {
         Members: {
           select: {
             userId: true,
+            Users: {
+              select:{
+                gender: true,
+              }
+            }
           },
         },
       },
     });
+    return members;
   }
 
 

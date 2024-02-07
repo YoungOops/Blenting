@@ -18,7 +18,7 @@ signinButton.addEventListener('click', () => {
 
 signoutButton.addEventListener('click', () => {
   localStorage.removeItem('accessToken');
-  window.location.href = '/main.html';
+  window.location.href = '/index.html';
 });
 
 profileButton.addEventListener('click', () => {
@@ -46,5 +46,5 @@ matchingButton.addEventListener('click', () => {
     alert('로그인이 필요합니다.');
     return;
   }
-  ClickMatchingButton();
+  ClickMatchingButton('GROUP');
 });

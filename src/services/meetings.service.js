@@ -1,9 +1,10 @@
-import { MeetingsRepository } from "../repositories/meetings.repository.js"
+import { MeetingsRepository } from "../repositories/meetings.repository.js";
+import { MembersRepository } from "../repositories/members.repository.js";
 //import cron from 'node-cron';
 
 export class MeetingsService {
   meetingsRepository = new MeetingsRepository();
-
+  membersRepository = new MembersRepository();
   constructor() {
     // /*this.meetingCleanupJob =*/ cron.schedule('*/5 * * * * *',() => {
     //   this.autoDeleteMeetings();
@@ -39,11 +40,17 @@ export class MeetingsService {
   }
 
   // 그룹타입의 미팅방 찾기
-  findAndGetMeeting = async (type) => {
+  findAndGetMeeting = async (type, userId) => {
+
+    const userInfo = await this.membersRepository.findUserInfo(userId);
+
+    const userGender = userInfo.gender;
 
     // 미팅방의 정원설정, 이후 정원이 차게 되면 새로운 방 만들기 등
 
     //const maxMeetingCapacity = 6;
+
+    const maxGender = 2;
 
     // 타입에 따른 채팅방 정원
     let maxMeetingCapacity = 0;
@@ -59,24 +66,58 @@ export class MeetingsService {
 
 
 
-    // 그룹 타입의 채팅방의 id, members의 userId
+    // 타입의 채팅방의 id, members의 userId
     // existMeetingsAndUsers(async 함수)에 return이 없으면 promise객체 자체를 반환하기때문에 if문에서 항상 true 반환
     const meetingAndUser = await this.meetingsRepository.existMeetingsAndUsers(type);
 
+    console.log('------------------------------------');
     console.log('meeting방 인원 확인', meetingAndUser);
+    console.log('------------------------------------');
 
     // 정원이 안 찬 미팅방
     let meeting;
 
+    const meetingsIsFull = meetingAndUser.every(meeting => meeting.Members.length >= maxMeetingCapacity)
+
     // every => 배열의 모든 요소가 주어진 조건을 만족하면 true   채팅방의 현 인원수가 정원보다 이상이면
-    if (!meetingAndUser || meetingAndUser.every(meeting => meeting.Members.length >= maxMeetingCapacity)) {
+    if (!meetingAndUser || meetingsIsFull) {
 
-      return meeting = await this.meetingsRepository.createMeeting();
-
+      console.log('------------------------------------');
+      console.log("방 생성");
+      console.log('------------------------------------');
+      meeting = await this.meetingsRepository.createMeeting(type);
+      return meeting;
 
     } else {
+      console.log('------------------------------------');
+      console.log('방 지정');
+      console.log('------------------------------------');
       // find 조건을 만족하는 첫 번째를 반환
-      return meeting = meetingAndUser.find(user => user.Members.length < maxMeetingCapacity);
+      meeting = meetingAndUser.find(user => {
+        const maleCount = user.Members.filter(member => member.Users.gender === 'MALE').length;
+        console.log('maleCount 확인 ', maleCount)
+
+        const femaleCount = user.Members.filter(member => member.Users.gender === 'FEMALE').length;
+        console.log('femaleCount 확인 ', femaleCount)
+
+        const isMaleFull = (userGender === 'MALE' && maleCount === maxGender);
+        const isFemaleFull = (userGender === 'FEMALE' && femaleCount === maxGender);
+        return (!isMaleFull && !isFemaleFull);
+      });
+
+
+
+
+      if (meeting) {
+        console.log('성별 조건을 거친 후 방 지정')
+        return meeting;
+      } else {
+        console.log('성별 조건을 거친 후 방 생성')
+        const newMeeting = await this.meetingsRepository.createMeeting(type);
+
+        return newMeeting;
+      }
+
 
     }
 

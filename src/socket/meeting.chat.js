@@ -1,13 +1,17 @@
 import { MessagesRepository } from '../repositories/messages.repository.js';
 import { MembersRepository } from '../repositories/members.repository.js';
+import { MeetingsRepository } from '../repositories/meetings.repository.js';
 import { prisma } from '../utils/prisma/index.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { MeetingsController } from '../controllers/meetings.controller.js';
 
 dotenv.config();
 
 const messagesRepository = new MessagesRepository();
 const membersRepository = new MembersRepository();
+const meetingsRepository = new MeetingsRepository();
+const meetingsController = new MeetingsController();
 //2번
 let users = new Map();
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기( members)
@@ -49,6 +53,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       throw new Error('User not found');
     }
     const userId = checkUser.id;
+    const userGender = checkUser.gender;
     socket.user = { nickName: checkUser.nickName }; // => checkUser
     console.log("소켓 유저 확인", socket.user)
 
@@ -58,50 +63,92 @@ export const meetingHandleChatEvent = async (io, socket) => {
     // 현재 미팅방과 유저(나) 찾기 
     console.log("meetingId, userId 확인 ", meetingId, userId);
     const existingMember = await membersRepository.existingMember(meetingId, userId);
-    console.log("existingMember 확인", existingMember);
+    console.log("existingMember 확인1", existingMember);
+
+
+    // 내 성별 확인 
+
+    // 내 성별이 남성일 경우 해당 방의 남성이 몇명인지 확인 후 가득 차있으면 추가 못함
+
+    // // 해당 방의 인원들의 성별 찾기 
+    // const usersInMeeting = await membersRepository.getExistingMembers(meetingId);
+    // console.log('------------------------------------');
+    // console.log('해당 방 인원 확인', usersInMeeting);
+    // console.log('------------------------------------');
+    // // 해당 방의 남성 인원 수
+    // const maleCount = usersInMeeting.filter(users => users.Users.gender === 'MALE').length;
+
+    // // 해당 방의 여성 인원 수
+    // const femaleCount = usersInMeeting.filter(users => users.Users.gender === 'FEMALE').length;
+
+
+    // console.log('------------------------------------');
+    // console.log(maleCount, femaleCount);
+    // console.log('------------------------------------');
+    // // 성별의 최대 인원 수
+    // const maxUsers = 2;
+
+    // const isMaleFull = (userGender === 'MALE' && maleCount === maxUsers)
+    // const isFemaleFull = (userGender === 'FEMALE' && femaleCount === maxUsers)
+    // if (isMaleFull || isFemaleFull) {
+    //   const newRoomId = await meetingsController.createMeeting('GROUP');
+      
+    // }
 
     if (!existingMember) {
       // 중복되지 않은 경우에만 맴버에 추가
       await membersRepository.createMember(meetingId, userId);
-
+      console.log('해당 방 멤버에 추가 완료')
     }
     let existingMembers = await membersRepository.getExistingMembers(meetingId);
 
-    console.log("existingMembers 확인 ", existingMembers);
+    console.log("existingMembers 확인2 ", existingMembers);
 
     //users.set(socket.id, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
 
-    users.set(existingMembers, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
-    console.log("users 확인", users);
+    // users.set(existingMembers, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
+    // console.log("users 확인", users);
 
     let members = existingMembers.map(member => member.Users)
 
     //3번
     io.to(meetingId).emit('entry', {
       id: socket.decodedUserId,
-       me: socket.user.nickName,
-       meetingId: meetingId,
-       users:members,
-     // users: Array.from(users.values()),
+      socketId: socket.id,
+      me: socket.user.nickName,
+      meetingId: meetingId,
+      users: members,
+      // users: Array.from(users.values()),
     }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log(`${socket.user.nickName} user connected meeting`);
 
     // 사용자의 연결이 끊어졌을 때 처리합니다.
-    socket.on('disconnect', async() => {
+    socket.on('disconnect', async () => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
       //users.delete(existingMember,socket.me);
 
-      // 삭제를 위한 Members 아이디 가져오기
-     const deleteMember = await membersRepository.existingMember(meetingId, userId);
-      console.log(deleteMember)
 
-     // db에서 해당 인원 멤버에서 삭제
+      // 삭제를 위한 Members 아이디 가져오기
+      const deleteMember = await membersRepository.existingMember(meetingId, userId);
+      console.log('------------------------------------');
+      console.log('미팅방에서 삭제를 위한 members 아이디 가져오기', deleteMember);
+      console.log('------------------------------------');
+
+      // db에서 해당 인원 멤버에서 삭제
       await membersRepository.deleteMember(deleteMember.id);
 
       // 업데이트된 해당 방의 유저(닉네임)
       existingMembers = await membersRepository.getExistingMembers(meetingId);
       console.log("delete 후 existingMembers 확인", existingMembers)
-      
+
+      // 해당 방에 아무도 없으면 해당 방 삭제 // 2024 02 04 이게 필요할까?
+      if (existingMembers.length === 0) {
+        await meetingsRepository.deleteMeeting(meetingId);
+        console.log('------------------------------------');
+        console.log('아무도 없는 방 삭제');
+        console.log('------------------------------------');
+      }
+
 
       // 사용자의 퇴장을 모든 클라이언트에게 알립니다.
       io.to(meetingId).emit('exit', { id: socket.id, me: socket.user.nickName, users: existingMembers.map(member => member.Users)/*Array.from(users.values())*/ });
