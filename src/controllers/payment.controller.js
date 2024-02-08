@@ -23,4 +23,13 @@ export class PaymentController {
       next(err);
     }
   };
+
+  getPackages = async (req, res, next) => {
+    try {
+      const readPackages = await this.paymentService.readAllPackages();
+      return res.status(200).json(readPackages);
+    } catch (err) {
+      next(err);
+    }
+  };
 }
