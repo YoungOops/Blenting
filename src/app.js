@@ -49,13 +49,13 @@ app.use('/admin', express.static(join(__dirname, 'public', 'admin')));
 // 라우트를 설정합니다 meeting네임스페이스
 app.get('/meeting', (req, res) => {
   // 루트 경로에 대한 GET 요청 처리
-  res.sendFile(join(__dirname, 'public', 'index.html')); // 'index.html' 파일을 응답으로 전송
+  res.sendFile(join(__dirname, 'public', 'chat.html')); // 'index.html' 파일을 응답으로 전송
 });
 
 // 라우트를 설정합니다 couple네임스페이스
 app.get('/couple', (req, res) => {
   // 루트 경로에 대한 GET 요청 처리
-  res.sendFile(join(__dirname, 'public', 'index.html')); // 'index.html' 파일을 응답으로 전송
+  res.sendFile(join(__dirname, 'public', 'chat.html')); // 'index.html' 파일을 응답으로 전송
 });
 
 // 미들웨어를 설정합니다

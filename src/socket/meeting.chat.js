@@ -17,7 +17,7 @@ let users = new Map();
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기( members)
 // js : Map, Set 찾아보기
 
-
+// 2024 02 07 서버에서 gender를 갖고 투표 목록 가공 후 자신에게만 보내기 
 
 export const meetingHandleChatEvent = async (io, socket) => {
   try {
@@ -116,6 +116,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
       id: socket.decodedUserId,
       socketId: socket.id,
       me: socket.user.nickName,
+      myGender: userGender,
       meetingId: meetingId,
       users: members,
       // users: Array.from(users.values()),
