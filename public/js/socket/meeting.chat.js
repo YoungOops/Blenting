@@ -6,7 +6,7 @@ const url = new URLSearchParams(location.search);
 const roomId = url.get('roomId');
 const meetingType = url.get('meetingType');
 let meetingSocket;
-
+let me;
 
 if (meetingType === 'meeting') {
   meetingSocket = getSocket(meetingType, roomId);
@@ -26,9 +26,33 @@ console.log('meetingSocket type 확인 ', typeof meetingSocket);
 if (!meetingSocket || typeof meetingSocket.on !== 'function') {
   console.error('meetingSocket is undefined or not a Socket');
 } else {
-  meetingSocket.on('connect', () => {
+  meetingSocket.on('connect', async () => {
     console.log('Meeting socket connected');
     console.log('Meeting socket 연결 상태: ', meetingSocket.connected);
+
+    const token = localStorage.getItem('accessToken');
+
+    // get에서 무언가를 전달 하고 싶을 때 쿼리스트링 사용
+    // 남아있는 채팅방 확인 후 조건에 따라 생성 api
+    const url = `/api/user/profile`;
+    const option = {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // 아직은 meeting만 가능
+    const response = await fetch(url, option);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error status: ${response.status}`);
+    }
+
+    console.log('서버응답확인 ', response.headers);
+
+    me = await response.json();
+
   });
 
   /** form 요소에 'submit' 이벤트 리스너를 추가합니다.
@@ -82,6 +106,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         });
 
 
+        // 투표 목록
         // 채팅 참가 시 지목하기 select에 option 추가
         select.innerHTML = '';
         const defaultOption = document.createElement('option');
@@ -95,23 +120,18 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         // }
 
 
-        // 나의 성별 확인
+        // 나의 성별을 가지고 투표 목록 가공
         data.users.forEach((e) => {
 
-          console.log("e.gender확인", e.gender)
-          // 2024 02 05
-          // 자신의 이름 추가 안함(구현 예정)
-          const option = document.createElement('option');
-          option.textContent = e.nickName;
-          option.value = e.id;
-          select.append(option);
+          console.log("vote e 확인", e)
 
+          if (me.gender !== e.gender) {
+            const option = document.createElement('option');
+            option.textContent = e.nickName;
+            option.value = e.id;
+            select.append(option);
+          }
         })
-
-
-
-
-
 
       }
     } catch (error) {
@@ -142,12 +162,19 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
       });
 
       select.innerHTML = '';
-      data.users.members.forEach((e) => {
+      const defaultOption = document.createElement('option');
+      defaultOption.text = '지목하기';
+      defaultOption.selected = true;
+      select.append(defaultOption);
 
-        const option = document.createElement('option');
-        option.textContent = e.nickName;
-        option.value = e.id;
-        select.append(option);
+      data.users.forEach((e) => {
+
+        if (me.gender !== e.gender) {
+          const option = document.createElement('option');
+          option.textContent = e.nickName;
+          option.value = e.id;
+          select.append(option);
+        }
 
       })
 
