@@ -26,7 +26,7 @@ export class PaymentController {
 
   getPackages = async (req, res, next) => {
     try {
-      const readPackages = await this.usersService.readAllPackages();
+      const readPackages = await this.paymentService.readAllPackages();
       return res.status(200).json(readPackages);
     } catch (err) {
       next(err);
