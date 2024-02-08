@@ -14,4 +14,10 @@ paymentRouter.patch(
   paymentController.buyPackage,
 );
 
+paymentRouter.get(
+  '/packageList',
+  authMiddleware.isAuth,
+  paymentController.getPackages,
+);
+
 export { paymentRouter };

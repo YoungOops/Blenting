@@ -11,4 +11,9 @@ export class PaymentRepository {
     });
     return findUser;
   };
+
+  readAllPackages = async () => {
+    const findAllPackages = await prisma.Payments.findMany();
+    return findAllPackages;
+  };
 }
