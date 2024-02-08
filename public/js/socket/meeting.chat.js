@@ -5,7 +5,7 @@ const url = new URLSearchParams(location.search);
 
 const roomId = url.get('roomId');
 const meetingType = url.get('meetingType');
-let meetingSocket;
+export let meetingSocket;
 let me;
 
 if (meetingType === 'meeting') {
@@ -161,6 +161,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
       });
 
+      // 투표 목록
       select.innerHTML = '';
       const defaultOption = document.createElement('option');
       defaultOption.text = '지목하기';
@@ -212,7 +213,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     if (select.value) {
 
       // 클라이언트에서 서버로 이벤트 발송
-      meetingSocket.emit('vote', { option: select.value });
+      meetingSocket.emit('vote', { option: select.value, voteUserSocketId: meetingSocket.id });
       select.selectedIndex = 0;
     }
   })
@@ -237,19 +238,17 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
 
-    // // 소개팅 방으로 이동 요청
-    // meetingSocket.emit('create couple', { user: vote.fromUser, anotherUser: vote.toUser })
+    // 소개팅 방으로 이동 요청
+    meetingSocket.emit('join couple', {
+      fromUser: vote.fromUser,
+      toUser: vote.toUser,
+      userSocketId: vote.userSocketId,
+      anOtherUserSocketId: vote.anotherUserSocketId
+    })
 
-    // window.location.href = server + `/couple?meetingType=couple&roomId=${roomId}`;
+    // 소개팅 방을 찾고 없을 시 생성하여 방을 지정
+    //ClickMatchingButton('COUPLE');
   })
-
-  // meetingSocket.on('move couple', async (couple) => {
-  //   try {
-  //     await ClickMatchingButton(couple.type);
-  //   } catch(err){
-  //     console.error(err);
-  //   }
-  // })
 
 
 }
