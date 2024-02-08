@@ -29,6 +29,7 @@ body {
 
 #chat-messages-container {
   /* background-color: #007bff; */
+  padding-bottom: 20px;
   height: 100%; /* 높이 설정 */
   width: 60%; /* 너비 설정 */
   min-width: 350px; /* 최소 너비 설정 */
