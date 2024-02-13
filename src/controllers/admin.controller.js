@@ -77,7 +77,7 @@ export class AdminController {
       let pageNo = parseInt(req.query.pageNo, 10) || 1;
 
       //db에서 사용자 목록 가져옴
-      const allUsers = await this.adminService.findAllUsers();
+      const allUsers = await this.adminService.findSomeUsers();
       const totalCount = allUsers.length;
 
       // 페이지네이션 로직

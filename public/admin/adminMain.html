@@ -72,7 +72,11 @@
       </thead>
       <!-- 테이블의 본문 부분을 정의합니다. 실제 데이터 행을 포함 -->
       <tbody>
-        <!-- 여기에 서버로부터 받은 유저 데이터를 표시합니다 -->
+        <div id="pagination-controls">
+          <button id="prev-page">Previous</button>
+          <span id="current-page">1</span> / <span id="total-pages">10</span>
+          <button id="next-page">Next</button>
+        </div>
       </tbody>
     </table>
     <!-- <button id="searchButton">검색</button> -->
