@@ -3,10 +3,10 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { prisma } from '../utils/prisma/index.js';
-import { MeetingsService } from '../services/meetings.service.js';
+import { MeetingsRepository } from '../repositories/meetings.repository.js';
 dotenv.config();
 
-const meetingsService = new MeetingsService();
+const meetingsRepository = new MeetingsRepository();
 
 // 투표 한 인원 저장
 let voteUsers = new Map();
@@ -55,7 +55,7 @@ export const handleVoteEvent = async (io, socket) => {
             }
 
             // 투표한 인원 소켓아이디 저장
-            voteUsersInRoom.push({ voteSocketId: data.voteUserSocketId, toUserId: data.option });
+            voteUsersInRoom.push({ voteSocketId: data.voteUserSocketId, fromUserId: userId, toUserId: +data.option });
 
             // 수정된 값 다시 맵에 저장
             voteUsers.set(meetingId, voteUsersInRoom);
@@ -76,15 +76,15 @@ export const handleVoteEvent = async (io, socket) => {
                 }
             })
 
-            if(voteLog){
+            if (voteLog) {
 
-                
-            // 찾은 나의 지목 이력 삭제 (이력이 계속 남아있으면 나를 지목한 유저를 찾을 때의 로직에 걸림)
-            const deleteVoteLog = await prisma.votes.delete({
-                where: {
-                    id: voteLog.id,
-                }
-            })
+
+                // 찾은 나의 지목 이력 삭제 (이력이 계속 남아있으면 나를 지목한 유저를 찾을 때의 로직에 걸림)
+                const deleteVoteLog = await prisma.votes.delete({
+                    where: {
+                        id: voteLog.id,
+                    }
+                })
 
             }
 
@@ -107,7 +107,8 @@ export const handleVoteEvent = async (io, socket) => {
             const votedMe = await prisma.votes.findFirst({
                 where: {
                     meetingId: +roomId,
-                    toUserId: +userId
+                    toUserId: +userId,
+                    fromUserId: +data.option,
                 },
                 select: {
                     id: true,
@@ -140,16 +141,25 @@ export const handleVoteEvent = async (io, socket) => {
                 // voteUsersInRoom안에 유저 중 meetingId에 속한 유저들 추출
                 const usersInRoom = voteUsers.get(meetingId);
 
+                console.log('------------------------------------');
+                console.log(usersInRoom);
+                console.log(fromUser.id, toUser.id)
+                console.log('------------------------------------');
+
                 // usersInRoom유저들 중 지목 한 유저아이디와 같은 유저의 소켓아이디 추출
-                const userSocketId = usersInRoom.find(user => user.toUserId === fromUser.id)?.voteSocketId;
+                const fromSocketId = usersInRoom.find(user => user.toUserId === fromUser.id)?.voteSocketId;
                 // usersInRoom유저들 중 지목 당한 유저아이디와 같은 유저의 소켓아이디 추출
-                const anotherUserSocketId = usersInRoom.find(user => user.toUserId === toUser.id)?.voteSocketId;
+                const toSocketId = usersInRoom.find(user => user.toUserId === toUser.id)?.voteSocketId;
 
                 console.log('------------------------------------');
-                console.log('userSocketId, anotherUserSocketId 확인', userSocketId, anotherUserSocketId);
+                console.log('fromSocketId, toSocketId 확인', fromSocketId, toSocketId);
                 console.log('------------------------------------');
 
-                io.to(meetingId).emit('announce', { fromUser, toUser, userSocketId, anotherUserSocketId });
+                // 소개팅 방 생성 
+                const couple = await meetingsRepository.createMeeting('COUPLE');
+                const coupleId = couple.id
+
+                io.to(meetingId).emit('announce', { fromUser, toUser, coupleId, fromSocketId, toSocketId });
 
                 // 해당 meetingId에서 지목한 유저들 삭제
                 voteUsers.set(meetingId, usersInRoom.filter(user => user.toUserId !== fromUser.id && user.toUserId !== toUser.id));
@@ -163,22 +173,4 @@ export const handleVoteEvent = async (io, socket) => {
             console.error("Error :", err);
         }
     })
-
-    socket.on('join couple', (data) => {
-        try {
-
-            console.log('------------------------------------');
-            console.log("join couple data 확인", data);
-            console.log('------------------------------------');
-            //socket.join(couple.id);
-            // io.to(meetingId).emit('move couple', { couple });
-            // console.log('------------------------------------');
-            // console.log('소개팅 방 생성', couple.id)
-            // console.log('------------------------------------');
-
-        } catch (err) {
-            console.error(err);
-        }
-    })
-
 }
