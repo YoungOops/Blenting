@@ -201,7 +201,6 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
       // 자신일 경우 메세지 박스 배경을 노랗게 설정
       if (meetingSocket.id === msg.socketId) {
 
-        // js로 선언한 것이 아니기 때문에 쿼리셀렉터 사용
         item.querySelector('.messageText').style.backgroundColor = 'yellow';
       }
 
