@@ -1,24 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="./css/main.style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="./css/head.style.css" />
+    <link rel="stylesheet" type="text/css" href="./css/main.style.css" />
     <title>Blenting</title>
-</head>
+  </head>
 
-<body>
-    <button id="signup" class="btn">sign up</button>
-    <button id="signin" class="btn">sign in</button>
-    <button id="signout" class="btn">sign out</button>
-    <button id="profile" class="btn">프로필</button>
-    <button id="payment" class="btn">티켓 충전</button>
-    <button id="match" class="btn">매칭 하기</button>
+  <body>
+    <div class="body-box">
+      <div class="head-box">
+        <div class="main-btn">
+          <img src="./img/icon.jpg" alt="" class="icon" />
+          <span class="logo">Blenting</span>
+        </div>
+        <img src="./img/profile.jpg" alt="" class="profile-img" />
+      </div>
+      <button id="signup" class="custom-btn btn"><span>sign up</span></button>
+      <button id="signin" class="custom-btn btn"><span>sign in</span></button>
+      <button id="signout" class="custom-btn btn"><span>sign out</span></button>
+      <button id="payment" class="custom-btn btn">
+        <span>티켓 충전</span>
+      </button>
+      <button id="match" class="custom-btn btn"><span>매칭 하기</span></button>
 
-    <script src="./js/constants.js"></script>
-    <script type="module" src="/js/main.js"></script>
-</body>
-</body>
-
+      <script src="./js/constants.js"></script>
+      <script type="module" src="/js/main.js"></script>
+    </div>
+  </body>
 </html>
