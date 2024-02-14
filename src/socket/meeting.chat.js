@@ -111,39 +111,6 @@ export const meetingHandleChatEvent = async (io, socket) => {
 
 
 
-    //users.set(userId, socket.id);
-    //users.set(userId, { socketId: socket.id, userGender: userGender });
-
-    //const socketIds = Array.from(users.values())
-
-    // // 1. 유저들과 성별, socket.id을 저장하고 
-    // // 2. 1.을 forEach로 해당 유저의 성별로 다른 (유저들을 저장해놓은 목록)의 성별을 비교하고
-    // // 3. 다른 성별들과 아이디, 닉네임을 변수에 저장 
-    // // 4. 이후 개인에게 이벤트로 보냄
-    // socket.on('updateVoteList', () => {
-    //   console.log('------------------------------------');
-    //   console.log('updateVoteList 확인', users);
-    //   console.log('------------------------------------');
-
-    //   io.to(meetingId).emit('voteList', {
-    //     voteList: updateVoteList,
-    //   });
-
-    //   users.forEach((user) => {
-
-    //   const updateVoteList = members.filter((otherUser) =>
-    //        user.myGender !== otherUser.gender
-    //      )
-
-    //      io.to(user.socketId).emit('voteList', {
-    //        voteList: updateVoteList,
-    //      });
-
-
-    //   })
-
-
-    // })
 
     // 사용자의 연결이 끊어졌을 때 처리합니다.
     socket.on('disconnect', async () => {
