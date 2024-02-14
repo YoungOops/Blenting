@@ -42,7 +42,6 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
       },
     };
 
-    // 아직은 meeting만 가능
     const response = await fetch(url, option);
 
     if (!response.ok) {
