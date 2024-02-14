@@ -48,10 +48,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-matchingButton.addEventListener('click', () => {
+matchingButton.addEventListener('click', async () => {
   if (!accessToken) {
     alert('로그인이 필요합니다.');
     return;
   }
-  ClickMatchingButton('GROUP');
+
+  // 티켓이 없을 시 입장 불가
+  const token = localStorage.getItem('accessToken');
+  const response = await fetch(`api/user/profile`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(`HTTP error status: ${response.status}`);
+  }
+
+  const userInfo = await response.json();
+
+  console.log("userInfo 확인", userInfo)
+
+  if (userInfo.ticket === 0) {
+
+    alert("티켓이 없습니다");
+
+  } else {
+
+    ClickMatchingButton('GROUP');
+ 
+  }
+
+
 });
