@@ -85,4 +85,14 @@ export class UsersRepository {
     });
     return deleteUser;
   };
+
+  // 소개팅 방 입장 시 티켓 소모
+  ticketConsumption = async (userId, ticket) => {
+    const postConsumptionTicket = await prisma.Users.update({
+      where: { id: userId },
+      data: { ticket: ticket }
+    });
+    return postConsumptionTicket;
+  }
+
 }
