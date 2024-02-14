@@ -7,6 +7,9 @@ const matchingButton = document.getElementById('match');
 const signoutButton = document.getElementById('signout');
 const profileButton = document.getElementById('profile');
 const paymentButton = document.getElementById('payment');
+
+const myPageButton = document.getElementById('myPage');
+
 const accessToken = localStorage.getItem('accessToken');
 
 signupButton.addEventListener('click', () => {
@@ -30,6 +33,10 @@ paymentButton.addEventListener('click', () => {
   window.location.href = '/payment.html';
 });
 
+myPageButton.addEventListener('click', () => {
+  window.location.href = '/myPage.html';
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   if (accessToken) {
     signupButton.style.display = 'none';
@@ -38,6 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
     profileButton.style.display = 'block';
     paymentButton.style.display = 'block';
     matchingButton.style.display = 'block';
+    matchingButton.style.display = 'block';
+    myPageButton.style.display = 'block';
   } else {
     signupButton.style.display = 'block';
     signinButton.style.display = 'block';
@@ -45,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     profileButton.style.display = 'none';
     paymentButton.style.display = 'none';
     matchingButton.style.display = 'none';
+    myPageButton.style.display = 'none';
   }
 });
 

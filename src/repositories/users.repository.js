@@ -29,7 +29,6 @@ export class UsersRepository {
   };
 
   readOneById = async (userId) => {
-    console.log('🚀 ~ UsersRepository ~ readOneById= ~ userId:', userId);
     const findUser = await this.prisma.Users.findUnique({
       where: { id: userId },
     });
@@ -51,18 +50,18 @@ export class UsersRepository {
     return deleteUser;
   };
 
-  /* 페이지네이션 */
+  /* 페이지네이션을 통한 유저 조회 */
   readSomeUsers = async (pageNo, countPerPage) => {
-    //클래스의 `constructor`에서 `prisma` 인스턴스를 받아 클래스 프로퍼티로 설정하고 메서드 내에서는 `this.prisma`를 사용합니다.
-    const findUsers = await this.prisma.Users.findMany({
-      skip: (pageNo - 1) * countPerPage, // 앞선 페이지의 항목들을 건너뜁니다.
+    // 올바른 건너뛰기 값을 계산하기 위해,
+    // (현재 페이지 번호 - 1)에 페이지당 개수를 곱합니다.
+    const skip = (pageNo - 1) * countPerPage;
+    const users = await this.prisma.Users.findMany({
+      skip: skip, // 계산된 값을 skip으로 사용합니다.
       take: countPerPage, // 현재 페이지에서 가져올 항목 수를 지정합니다.
-      include: { Auths: true },
+      include: { Auths: true }, // 관련된 Auths 테이블 데이터도 함께 가져옵니다.
     });
-    // `skip`은 건너뛸 레코드 수를 지정하고, `take`는 반환할 레코드 수를 지정합니다.
-    return findUsers;
+    return users;
   };
-
   /** 유저 토탈 카운트 메서드 */
   getTotalCount = async () => {
     const count = await this.prisma.Users.count();

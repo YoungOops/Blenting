@@ -63,7 +63,7 @@ export class AdminService {
   };
 
   /* 페이지 네이션을 통한 유저 조회 */
-  findSomeUsers = async (pageNo, countPerPage) => {
+  readSomeUsers = async (pageNo, countPerPage) => {
     // UsersRepository의 readSomeUsers 메서드를 호출하며 페이지 번호와 페이지당 유저 수를 인자로 전달합니다.
     return await this.usersRepository.readSomeUsers(pageNo, countPerPage);
   };
