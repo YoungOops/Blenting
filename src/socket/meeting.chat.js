@@ -13,7 +13,7 @@ const membersRepository = new MembersRepository();
 const meetingsRepository = new MeetingsRepository();
 const meetingsController = new MeetingsController();
 //2번
-let users = new Map();
+let roomUsers = new Map();
 
 // 메모리에 유저정보 저장하는건데 -> DB에 저장하는 방식으로 바꾸기( members)
 // js : Map, Set 찾아보기
@@ -60,35 +60,35 @@ export const meetingHandleChatEvent = async (io, socket) => {
     //3번
 
 
-      
-
-      // socket.user 객체에 사용자의 이메일을 저장합니다.
-      // socket.user = { email: user.email };
-
-      // 현재 미팅방과 유저(나) 찾기 
-      console.log("meetingId, userId 확인 ", meetingId, userId);
-      const existingMember = await membersRepository.existingMember(meetingId, userId);
-      console.log("existingMember 확인1", existingMember);
 
 
+    // socket.user 객체에 사용자의 이메일을 저장합니다.
+    // socket.user = { email: user.email };
 
-      if (!existingMember) {
-        // 중복되지 않은 경우에만 맴버에 추가
-        await membersRepository.createMember(meetingId, userId);
-        console.log('해당 방 멤버에 추가 완료')
-      }
-      let existingMembers = await membersRepository.getExistingMembers(meetingId);
+    // 현재 미팅방과 유저(나) 찾기 
+    console.log("meetingId, userId 확인 ", meetingId, userId);
+    const existingMember = await membersRepository.existingMember(meetingId, userId);
+    console.log("existingMember 확인1", existingMember);
 
-      console.log("existingMembers 확인2 ", existingMembers);
 
-      // users.set(existingMembers, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
-      // console.log("users 확인", users);
 
-      let members = existingMembers.map(member => member.Users)
+    if (!existingMember) {
+      // 중복되지 않은 경우에만 맴버에 추가
+      await membersRepository.createMember(meetingId, userId);
+      console.log('해당 방 멤버에 추가 완료')
+    }
+    let existingMembers = await membersRepository.getExistingMembers(meetingId);
 
-      //users.push({ socketId: socket.id, userId: userId, myGender: userGender })
-      const voteList = existingMembers.filter(member => userGender !== member.Users.gender)
-    
+    console.log("existingMembers 확인2 ", existingMembers);
+
+    // users.set(existingMembers, socket.user.nickName); // 새 사용자의 입장을 모든 클라이언트에게 알립니다.  members 에 저장 (유저)
+    // console.log("users 확인", users);
+
+    let members = existingMembers.map(member => member.Users)
+
+    //users.push({ socketId: socket.id, userId: userId, myGender: userGender })
+    const voteList = existingMembers.filter(member => userGender !== member.Users.gender)
+
 
     io.to(meetingId).emit('entry', {
       id: socket.decodedUserId,
@@ -97,7 +97,16 @@ export const meetingHandleChatEvent = async (io, socket) => {
       meetingId: meetingId,
       users: members,
       // users: Array.from(users.values()),
-    }); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
+    },
+
+      roomUsers.set(meetingId, { 
+        socketId: socket.id, 
+        userId: userId, 
+        nickName: checkUser.nickName, 
+        userGender: userGender, 
+      })
+
+    ); // 들어오면 모두에게 입장을 알림 'entry', { 이게 데이터임 }
     console.log(`${socket.user.nickName} user connected meeting`);
 
 
@@ -140,7 +149,7 @@ export const meetingHandleChatEvent = async (io, socket) => {
     socket.on('disconnect', async () => {
       // 해당 사용자의 ID를 users Set에서 제거합니다.
       //users.delete(existingMember,socket.me);
-
+      roomUsers.delete(socket.id);
 
       // 삭제를 위한 Members 아이디 가져오기
       const deleteMember = await membersRepository.existingMember(meetingId, userId);

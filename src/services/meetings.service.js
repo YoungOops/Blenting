@@ -50,7 +50,7 @@ export class MeetingsService {
 
     //const maxMeetingCapacity = 6;
 
-    const maxGender = 2;
+
 
     // 타입에 따른 채팅방 정원
     let maxMeetingCapacity = 0;
@@ -63,7 +63,7 @@ export class MeetingsService {
       maxMeetingCapacity = 2;
     }
 
-
+    const maxGender = maxMeetingCapacity / 2;
 
 
     // 타입의 채팅방의 id, members의 userId
@@ -83,14 +83,14 @@ export class MeetingsService {
     if (!meetingAndUser || meetingsIsFull) {
 
       console.log('------------------------------------');
-      console.log("방 생성");
+      console.log("공석이 없으므로 방 생성");
       console.log('------------------------------------');
       meeting = await this.meetingsRepository.createMeeting(type);
       return { meeting, userGender };
 
     } else {
       console.log('------------------------------------');
-      console.log('방 지정');
+      console.log('공석이 있으므로 방 지정 start');
       console.log('------------------------------------');
       // find 조건을 만족하는 첫 번째를 반환
       meeting = meetingAndUser.find(user => {
@@ -106,10 +106,11 @@ export class MeetingsService {
       });
 
 
+      console.log("정원과 각 성별의 인원을 확인한 방 확인 ", meeting)
 
 
       if (meeting) {
-        console.log('성별 조건을 거친 후 방 지정')
+        console.log('성별 조건을 거친 후 방 지정 방 번호', meeting.id, '유저 아이디 ', userId)
         return { meeting, userGender };
       } else {
         console.log('성별 조건을 거친 후 방 생성')

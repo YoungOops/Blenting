@@ -5,7 +5,7 @@ const url = new URLSearchParams(location.search);
 
 const roomId = url.get('roomId');
 const meetingType = url.get('meetingType');
-let meetingSocket;
+export let meetingSocket;
 let me;
 
 if (meetingType === 'meeting') {
@@ -161,6 +161,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
       });
 
+      // 투표 목록
       select.innerHTML = '';
       const defaultOption = document.createElement('option');
       defaultOption.text = '지목하기';
@@ -188,7 +189,23 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     try {
       console.log('소켓 msg 확인', msg);
       const item = document.createElement('div'); // 새로운 'li' 요소를 생성합니다.
+
+      // 자신의 메세지는 오른쪽에서 생성
+      if (meetingSocket.id === msg.socketId) {
+
+        item.style.textAlign = 'right';
+
+      }
+
       item.innerHTML = `<div class="messageUserName">${msg.socketUser}</div><span class="messageText">${msg.message}</span>`;
+
+      // 자신일 경우 메세지 박스 배경을 노랗게 설정
+      if (meetingSocket.id === msg.socketId) {
+
+        // js로 선언한 것이 아니기 때문에 쿼리셀렉터 사용
+        item.querySelector('.messageText').style.backgroundColor = 'yellow';
+      }
+
       // item.textContent = `${msg.socketUser}${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
       messages.appendChild(item); // 메시지 목록에 'li' 요소를 추가합니다.
       messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
@@ -212,7 +229,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     if (select.value) {
 
       // 클라이언트에서 서버로 이벤트 발송
-      meetingSocket.emit('vote', { option: select.value });
+      meetingSocket.emit('vote', { option: select.value, voteUserSocketId: meetingSocket.id });
       select.selectedIndex = 0;
     }
   })
@@ -237,19 +254,12 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
 
-    // // 소개팅 방으로 이동 요청
-    // meetingSocket.emit('create couple', { user: vote.fromUser, anotherUser: vote.toUser })
+    // 서로 투표한 인원들 소개팅 방으로 이동
+    if (meetingSocket.id === vote.fromSocketId || meetingSocket.id === vote.toSocketId) {
 
-    // window.location.href = server + `/couple?meetingType=couple&roomId=${roomId}`;
+      const roomId = vote.coupleId
+      window.location.href = `/couple?meetingType=couple&roomId=${roomId}`;
+
+    }
   })
-
-  // meetingSocket.on('move couple', async (couple) => {
-  //   try {
-  //     await ClickMatchingButton(couple.type);
-  //   } catch(err){
-  //     console.error(err);
-  //   }
-  // })
-
-
 }
