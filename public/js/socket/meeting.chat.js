@@ -189,7 +189,23 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     try {
       console.log('소켓 msg 확인', msg);
       const item = document.createElement('div'); // 새로운 'li' 요소를 생성합니다.
+
+      // 자신의 메세지는 오른쪽에서 생성
+      if (meetingSocket.id === msg.socketId) {
+
+        item.style.textAlign = 'right';
+
+      }
+
       item.innerHTML = `<div class="messageUserName">${msg.socketUser}</div><span class="messageText">${msg.message}</span>`;
+
+      // 자신일 경우 메세지 박스 배경을 노랗게 설정
+      if (meetingSocket.id === msg.socketId) {
+
+        // js로 선언한 것이 아니기 때문에 쿼리셀렉터 사용
+        item.querySelector('.messageText').style.backgroundColor = 'yellow';
+      }
+
       // item.textContent = `${msg.socketUser}${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
       messages.appendChild(item); // 메시지 목록에 'li' 요소를 추가합니다.
       messages.scrollTop = messages.scrollHeight; // 메시지 목록을 가장 아래로 스크롤합니다.
@@ -238,17 +254,12 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
 
-    // 소개팅 방으로 이동 요청
-    meetingSocket.emit('join couple', {
-      fromUser: vote.fromUser,
-      toUser: vote.toUser,
-      userSocketId: vote.userSocketId,
-      anOtherUserSocketId: vote.anotherUserSocketId
-    })
+    // 서로 투표한 인원들 소개팅 방으로 이동
+    if (meetingSocket.id === vote.fromSocketId || meetingSocket.id === vote.toSocketId) {
 
-    // 소개팅 방을 찾고 없을 시 생성하여 방을 지정
-    //ClickMatchingButton('COUPLE');
+      const roomId = vote.coupleId
+      window.location.href = `/couple?meetingType=couple&roomId=${roomId}`;
+
+    }
   })
-
-
 }
