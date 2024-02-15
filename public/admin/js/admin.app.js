@@ -49,8 +49,26 @@ const mbtiEnum = {
 document.addEventListener('DOMContentLoaded', function () {
   fetchAllUsers();
   initializeDropdownFilters();
+  // 유저 목록이 로드 된 후, 각 'View Profile' 버튼에 이벤트 리스너를 추가하는 로직이 필요합니다.
+  setupUserTable();
 });
 
+function setupUserTable() {
+  // 서버로부터 데이터를 받아와서 테이블을 업데이트 한 후에 실행되어야 합니다.
+  // 예를 들어 updateTable 함수 내에서 호출할 수 있습니다.
+  const viewProfileButtons = document.querySelectorAll('button[data-userid]');
+  viewProfileButtons.forEach((button) => {
+    button.addEventListener('click', function () {
+      const userId = this.getAttribute('data-userid');
+      redirectToUserProfile(userId);
+    });
+  });
+}
+
+function redirectToUserProfile(userId) {
+  // userId를 포함한 URL로 이동합니다.
+  window.location.href = `/admin/userDetail.html?userId=${userId}`;
+}
 let currentDropdownListener = null; // 미리 선언된 이벤트 리스너 참조
 
 function setupDropdownEventListeners() {
@@ -176,9 +194,7 @@ function fetchAllUsers(pageNo = 1, countPerPage = 10) {
     });
 }
 
-//fetchFilteredUsers() 함수에서 필터링된 사용자 데이터를 요청하고 있는데, 이 함수가 제대로 동작하는지 확인
 function fetchFilteredUsers() {
-  // 현재 설정된 드롭다운 값을 가져와 filters 객체를 가져옴
   const filters = {
     gender: document.getElementById('genderDropdown').value, // 성별 드롭다운 값
     height: document.getElementById('heightDropdown').value, // 키값 드롭다운 값
@@ -188,7 +204,6 @@ function fetchFilteredUsers() {
     want3: document.getElementById('want3Dropdown').value, // 원하는 옵션3 드롭다운 값
     mbti: document.getElementById('mbtiDropdown').value, // MBTI 드롭다운 값
   };
-  console.log(filters); // filters 객체를 콘솔에 출력
 
   // 필터 객체를 기반으로 쿼리 스트링을 초기화합니다.
   const queryString = Object.entries(filters) // 이 부분에서 filters 객체를 키-값 쌍의 배열로 변환
@@ -248,6 +263,11 @@ function updateTable(data) {
       <td><button onclick="redirectToUserProfile(${user.id})">View Profile</button></td>
     `;
     tbody.appendChild(tr);
+    // 이 부분을 추가합니다.
+    const button = tr.querySelector(`button`);
+    button.addEventListener('click', function () {
+      redirectToUserProfile(user.id);
+    });
   });
 }
 
@@ -255,10 +275,15 @@ function initializeDropdownFilters() {
   // 드롭다운을 초기화하고, 드롭다운 옵션을 추가합니다.
   addDropdownOptions(); // 드롭다운 옵션을 추가
   setupDropdownEventListeners(); // 드롭다운 이벤트 리스너를 설정
+  // HTML에서 해당 ID의 element가 실제로 존재하는지 확인한 후에만 이벤트 리스너를 추가합니다.
   const searchButton = document.getElementById('searchButton');
-  searchButton.addEventListener('click', function () {
-    fetchFilteredUsers(); // 검색 버튼 클릭 시 필터링된 결과를 가져옵니다.
-  });
+  if (searchButton) {
+    searchButton.addEventListener('click', function () {
+      fetchFilteredUsers(); // 검색 버튼 클릭 시 필터링된 결과를 가져옵니다.
+    });
+  } else {
+    console.error('Search button element not found!');
+  }
 }
 
 function handleNextPage() {
