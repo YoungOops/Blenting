@@ -5,7 +5,6 @@ const signinButton = document.getElementById('signin');
 const signupButton = document.getElementById('signup');
 const matchingButton = document.getElementById('match');
 const signoutButton = document.getElementById('signout');
-const profileButton = document.getElementById('profile');
 const paymentButton = document.getElementById('payment');
 const accessToken = localStorage.getItem('accessToken');
 
@@ -22,10 +21,6 @@ signoutButton.addEventListener('click', () => {
   window.location.href = '/index.html';
 });
 
-profileButton.addEventListener('click', () => {
-  window.location.href = '/profile.html';
-});
-
 paymentButton.addEventListener('click', () => {
   window.location.href = '/payment.html';
 });
@@ -35,23 +30,51 @@ document.addEventListener('DOMContentLoaded', () => {
     signupButton.style.display = 'none';
     signinButton.style.display = 'none';
     signoutButton.style.display = 'block';
-    profileButton.style.display = 'block';
     paymentButton.style.display = 'block';
     matchingButton.style.display = 'block';
   } else {
     signupButton.style.display = 'block';
     signinButton.style.display = 'block';
     signoutButton.style.display = 'none';
-    profileButton.style.display = 'none';
     paymentButton.style.display = 'none';
     matchingButton.style.display = 'none';
   }
 });
 
-matchingButton.addEventListener('click', () => {
+matchingButton.addEventListener('click', async () => {
   if (!accessToken) {
     alert('로그인이 필요합니다.');
     return;
   }
-  ClickMatchingButton('GROUP');
+
+  // 티켓이 없을 시 입장 불가
+  const token = localStorage.getItem('accessToken');
+  const response = await fetch(`api/user/profile`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(`HTTP error status: ${response.status}`);
+  }
+
+  const userInfo = await response.json();
+
+  console.log("userInfo 확인", userInfo)
+
+  if (userInfo.ticket === 0) {
+
+    alert("티켓이 없습니다");
+
+  } else {
+
+    ClickMatchingButton('GROUP');
+ 
+  }
+
+
 });

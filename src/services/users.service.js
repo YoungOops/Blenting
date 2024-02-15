@@ -25,4 +25,14 @@ export class UsersService {
   deleteUserById = async (userId) => {
     return await this.usersRepository.deleteOneById(userId);
   };
+
+  // 소개팅 방 입장 시 티켓 소모
+  ticketConsumption = async (userId, currentTicket) => {
+    const ticket = currentTicket - 1;
+
+    const postConsumptionTicket = await this.usersRepository.ticketConsumption(userId, ticket);
+
+    return postConsumptionTicket;
+  }
+
 }
