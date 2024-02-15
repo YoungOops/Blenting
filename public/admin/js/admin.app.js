@@ -49,28 +49,44 @@ const mbtiEnum = {
 document.addEventListener('DOMContentLoaded', function () {
   fetchAllUsers();
   initializeDropdownFilters();
+  // 유저 목록이 로드 된 후, 각 'View Profile' 버튼에 이벤트 리스너를 추가하는 로직이 필요합니다.
+  setupUserTable();
 });
 
-// function adminTitle() {
-//   document.addEventListener('DOMContentLoaded', function () {
-//     // 로컬 스토리지에서 닉네임을 가져옵니다.
-//     const adminNickName = localStorage.getItem('adminNickName'); // 환영 메시지를 업데이트합니다.
-//     if (adminNickName) {
-//       document.getElementById(
-//         'welcomeMessage',
-//       ).textContent = `${adminNickName}님 안녕하세요`;
-//     }
-//   });
-// }
-// console.log('🚀 ~ adminTitle ~ data:', data);
-function setupDropdownEventListeners() {
-  const dropdowns = document.querySelectorAll('select'); // 모든 select 요소를 선택
-  dropdowns.forEach(function (dropdown) {
-    dropdown.addEventListener('change', function () {
-      fetchFilteredUsers(); // 드롭다운 값이 변경될 때마다 필터링된 사용자 데이터를 가져오는 함수 호출
+function setupUserTable() {
+  // 서버로부터 데이터를 받아와서 테이블을 업데이트 한 후에 실행되어야 합니다.
+  // 예를 들어 updateTable 함수 내에서 호출할 수 있습니다.
+  const viewProfileButtons = document.querySelectorAll('button[data-userid]');
+  viewProfileButtons.forEach((button) => {
+    button.addEventListener('click', function () {
+      const userId = this.getAttribute('data-userid');
+      redirectToUserProfile(userId);
     });
   });
 }
+
+function redirectToUserProfile(userId) {
+  // userId를 포함한 URL로 이동합니다.
+  window.location.href = `/admin/userDetail.html?userId=${userId}`;
+}
+let currentDropdownListener = null; // 미리 선언된 이벤트 리스너 참조
+
+function setupDropdownEventListeners() {
+  const dropdowns = document.querySelectorAll('select');
+  dropdowns.forEach(function (dropdown) {
+    // 기존에 설정된 리스너가 있다면 제거
+    if (currentDropdownListener !== null) {
+      dropdown.removeEventListener('change', currentDropdownListener);
+    }
+    // 현재 리스너를 currentDropdownListener 에 저장
+    currentDropdownListener = function () {
+      fetchFilteredUsers();
+    };
+    // 리스너를 추가
+    dropdown.addEventListener('change', currentDropdownListener);
+  });
+}
+
 //addOptionsToDropdown(dropdownId, options)를 호출하는데,
 //여기서 dropdownId가 올바르게 전달되고 있는지, options가 올바르게 생성되고 있는지 확인해보세요.
 function addDropdownOptions() {
@@ -83,13 +99,44 @@ function addDropdownOptions() {
   addOptionsToDropdown('mbtiDropdown', createDropdownOptions(mbtiEnum)); // mbtiDropdown에 MBTI 옵션 추가
 }
 
-/** 아래 함수는 드롭다운 메뉴에 옵션을 추가하는 역할을 합니다.
-함수의 동작 원리는 다음과 같습니다:
-1. 함수는 dropdownId와 options 두 개의 매개변수를 받습니다.
-2. dropdownId는 드롭다운 메뉴의 ID를 나타내고, options는 드롭다운에 추가할 옵션들을 나타냅니다.
-3. 함수 내부에서는 document.getElementById(dropdownId)를 사용하여 해당 ID를 가진 드롭다운 요소를 선택합니다.
-4. 그 다음에는 선택된 드롭다운 요소의 innerHTML 속성을 사용하여 새로운 옵션을 추가합니다. 기본값으로 "All" 옵션을 추가하고, 그 뒤에 options를 추가합니다.
-필터를 거치지 않은 값은 그냥 null로 받아 올 수 있게 해줬습니다. */
+// 페이지네이션 컨트롤들을 업데이트하는 함수입니다.
+function setupPagination(pageInfo, currentPage, pageSize) {
+  // 페이지네이션 컨트롤 요소를 가져옵니다.
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  const currentPageSpan = document.getElementById('current-page');
+  const totalPagesSpan = document.getElementById('total-pages');
+
+  // 현재 페이지와 총 페이지 수를 업데이트합니다.
+  currentPageSpan.textContent = pageInfo.currentPage;
+  totalPagesSpan.textContent = pageInfo.totalPage;
+
+  // 이전에 추가된 이벤트 리스너를 제거합니다. 리무브 이벤트 리스너로 바꾸기.
+  if (prevPageHandler) {
+    prevButton.removeEventListener('click', prevPageHandler);
+  }
+  if (nextPageHandler) {
+    nextButton.removeEventListener('click', nextPageHandler);
+  }
+
+  // 새로운 리스너 함수를 정의합니다.
+  prevPageHandler = function () {
+    if (currentPage > 1) fetchAllUsers(currentPage - 1, pageSize);
+  };
+  nextPageHandler = function () {
+    if (currentPage < pageInfo.totalPage)
+      fetchAllUsers(currentPage + 1, pageSize);
+  };
+
+  // 새로 정의된 리스너를 이벤트에 연결합니다.
+  prevButton.addEventListener('click', prevPageHandler);
+  nextButton.addEventListener('click', nextPageHandler);
+
+  // 버튼 활성화/비활성화 설정
+  prevButton.disabled = currentPage === 1;
+  nextButton.disabled = currentPage === pageInfo.totalPage;
+}
+
 function addOptionsToDropdown(dropdownId, options) {
   const selectElement = document.getElementById(dropdownId);
   // 디폴트 값을 만들어서 넣어주기... option....
@@ -103,7 +150,7 @@ function createDropdownOptions(enumObject) {
     .join(''); // 생성된 옵션들을 문자열로 결합
 }
 
-function fetchAllUsers() {
+function fetchAllUsers(pageNo = 1, countPerPage = 10) {
   // 액세스 토큰을 로컬 스토리지에서 가져옵니다.
   const token = localStorage.getItem('accessToken');
   // 토큰이 없는 경우 에러를 출력하고 함수를 종료합니다.
@@ -112,6 +159,7 @@ function fetchAllUsers() {
     return; // 토큰이 없으면 함수를 종료합니다.
   }
   // 백엔드 서버에서 모든 사용자를 가져오는 GET 요청을 보냅니다.
+  // 쿼리로 서버에 카운트퍼페이지, 페이지넘버를 어떻게 넘겨주는지 알아보기
   fetch('/api/admin/allUsers', {
     method: 'GET',
     headers: {
@@ -125,13 +173,17 @@ function fetchAllUsers() {
         throw new Error('Network response was not ok');
       }
       // 응답을 JSON 형태로 파싱합니다.
-      return response.json(); // 응답을 JSON 형태로 파싱합니다.
+      return response.json();
     })
-    .then((users) => {
-      // 가져온 사용자 데이터를 테이블에 업데이트하고 콘솔에 출력합니다.
-      updateTable(users);
-      console.log(users); // 가져온 사용자 데이터를 콘솔에 출력합니다.
-      // 이후 필요한 작업을 수행합니다.
+    .then((response) => {
+      console.log('🚀 ~ .then ~ response:', response);
+      updateTable(response.data);
+      // setupPagination 호출에 필요한 페이지 정보를 가져옵니다.
+      setupPagination(
+        response.pageInfo,
+        response.pageInfo.currentPage,
+        countPerPage,
+      );
     })
     .catch((error) => {
       // fetch 작업에 문제가 있을 경우 에러를 출력합니다.
@@ -142,9 +194,7 @@ function fetchAllUsers() {
     });
 }
 
-//fetchFilteredUsers() 함수에서 필터링된 사용자 데이터를 요청하고 있는데, 이 함수가 제대로 동작하는지 확인
 function fetchFilteredUsers() {
-  // 현재 설정된 드롭다운 값을 가져와 filters 객체를 가져옴
   const filters = {
     gender: document.getElementById('genderDropdown').value, // 성별 드롭다운 값
     height: document.getElementById('heightDropdown').value, // 키값 드롭다운 값
@@ -154,7 +204,6 @@ function fetchFilteredUsers() {
     want3: document.getElementById('want3Dropdown').value, // 원하는 옵션3 드롭다운 값
     mbti: document.getElementById('mbtiDropdown').value, // MBTI 드롭다운 값
   };
-  console.log(filters); // filters 객체를 콘솔에 출력
 
   // 필터 객체를 기반으로 쿼리 스트링을 초기화합니다.
   const queryString = Object.entries(filters) // 이 부분에서 filters 객체를 키-값 쌍의 배열로 변환
@@ -171,28 +220,23 @@ function fetchFilteredUsers() {
   // 서버로부터 필터링된 유저 데이터를 가져오고, 데이터가 있다면 테이블을 업데이트합니다.
   console.log(url); // URL을 콘솔에 출력합니다.
   fetch(url, {
-    // URL로 GET 요청을 보냅니다.
-    method: 'GET', // GET 메서드를 사용합니다.
+    method: 'GET',
     headers: {
-      // 'Cache-Control': 'no-cache', // 캐시 제어 헤더를 설정하지 않습니다.
-      'Content-Type': 'application/json', // 요청의 콘텐츠 타입을 JSON으로 설정합니다.
-      Authorization: `Bearer ${localStorage.getItem('accessToken')}`, //인증을 위한 토큰을 헤더에 포함시킵니다.
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
     },
   })
     .then((response) => {
-      // 만약 응답이 정상적이지 않으면 에러를 throw합니다.
       if (!response.ok) {
-        throw new Error('네트워크 응답이 올바르지 않습니다');
+        throw new Error('Network response was not ok');
       }
-      // 응답을 JSON으로 파싱합니다.
-      return response.json();
+      return response.json(); // 응답이 올바르면 JSON으로 파싱합니다.
     })
     .then((data) => {
-      // 받은 데이터로 테이블을 업데이트합니다
-      updateTable(data); // 받아온 데이터로 테이블을 업데이트하는 함수
+      console.log(data); // 서버로부터 받은 데이터 로깅
+      updateTable(data); // 받아온 데이터로 테이블을 업데이트하는 함수 호출
     })
     .catch((error) => {
-      // 필터링된 사용자를 가져오는 중에 에러가 발생한 경우 에러 메시지를 로깅합니다
       console.error('Error fetching filtered users:', error);
     });
 }
@@ -219,20 +263,35 @@ function updateTable(data) {
       <td><button onclick="redirectToUserProfile(${user.id})">View Profile</button></td>
     `;
     tbody.appendChild(tr);
+    // 이 부분을 추가합니다.
+    const button = tr.querySelector(`button`);
+    button.addEventListener('click', function () {
+      redirectToUserProfile(user.id);
+    });
   });
-}
-// 상세 정보 페이지로 리디렉션하는 함수입니다.
-function redirectToUserProfile(userId) {
-  // 여기에서는 실제 상세 페이지의 URL은 프로젝트 상황에 맞게 설정해야 합니다.
-  window.location.href = `/admin/userDetail.html?userId=${userId}`;
 }
 
 function initializeDropdownFilters() {
   // 드롭다운을 초기화하고, 드롭다운 옵션을 추가합니다.
   addDropdownOptions(); // 드롭다운 옵션을 추가
   setupDropdownEventListeners(); // 드롭다운 이벤트 리스너를 설정
+  // HTML에서 해당 ID의 element가 실제로 존재하는지 확인한 후에만 이벤트 리스너를 추가합니다.
   const searchButton = document.getElementById('searchButton');
-  searchButton.addEventListener('click', function () {
-    fetchFilteredUsers(); // 검색 버튼 클릭 시 필터링된 결과를 가져옵니다.
-  });
+  if (searchButton) {
+    searchButton.addEventListener('click', function () {
+      fetchFilteredUsers(); // 검색 버튼 클릭 시 필터링된 결과를 가져옵니다.
+    });
+  } else {
+    console.error('Search button element not found!');
+  }
+}
+
+function handleNextPage() {
+  // 현재 페이지가 총 페이지 수보다 작을 때에만 다음 페이지로 이동합니다.
+  if (currentPage < pageInfo.totalPage) {
+    fetchAllUsers(currentPage + 1, pageSize);
+  } else {
+    // 아무 작업도 하지 않거나, 혹은 '마지막 페이지 입니다'와 같은 메시지를 표시합니다.
+    console.log('This is the last page.');
+  }
 }

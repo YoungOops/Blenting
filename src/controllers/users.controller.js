@@ -3,6 +3,16 @@ import { UsersService } from '../services/users.service.js';
 export class UsersController {
   usersService = new UsersService();
 
+  getMyPage = async (req, res, next) => {
+    try {
+      const { userId } = req.user;
+      const user = await this.usersService.readOne(userId);
+      return res.status(200).json(user);
+    } catch (err) {
+      next(err);
+    }
+  };
+  /** ?? 이미 만들어져있는 것 같음 */
   getProfile = async (req, res, next) => {
     try {
       const { userId } = req.user;

@@ -65,6 +65,12 @@ app.use(cookieParser()); // 쿠키 파싱
 app.use(LogMiddleware); // 로깅
 app.use(ErrorHandlingMiddleware);
 
+// ErrorHandlingMiddleware.js 에서 서버의 오류를 캐치하는 로직
+app.use((error, req, res, next) => {
+  console.error(error); // 에러 내용을 콘솔에 출력
+  res.status(error.status || 500).send(error.message || 'Something went wrong');
+});
+
 // HTTP 서버를 생성하고, Socket.io 서버를 설정합니다
 setupSocket(httpServer);
 

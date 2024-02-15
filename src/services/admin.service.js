@@ -62,10 +62,15 @@ export class AdminService {
     );
   };
 
-  /** 유저 전체조회 */
-  findAllUsers = async () => {
-    // UsersRepository를 사용하여 모든 사용자를 읽어옵니다.
-    return await this.usersRepository.readAll();
+  /* 페이지 네이션을 통한 유저 조회 */
+  readSomeUsers = async (pageNo, countPerPage) => {
+    // UsersRepository의 readSomeUsers 메서드를 호출하며 페이지 번호와 페이지당 유저 수를 인자로 전달합니다.
+    return await this.usersRepository.readSomeUsers(pageNo, countPerPage);
+  };
+
+  /** 유저 토탈 카운트 */
+  getTotalUserCount = async () => {
+    return await this.usersRepository.getTotalCount();
   };
 
   /** 유저 원하는 값 필터링 후 조회 */
