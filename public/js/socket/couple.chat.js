@@ -13,11 +13,17 @@ const form = document.getElementById('form');
 const input = document.getElementById('input');
 const messages = document.getElementById('chat-messages');
 const userList = document.getElementById('user-list');
+const select = document.getElementById('select-vote-list');
 
 if (!coupleSocket || typeof coupleSocket.on !== 'function') {
   console.error('coupleSocket is not defined or not a Socket');
 
+  select.style.display = 'block';
+  
 } else {
+
+  select.style.display = 'none';
+  
   coupleSocket.on('connect', () => {
     console.log('Couple socket connected');
     console.log('Couple socket 연결 상태: ', coupleSocket.connected);
