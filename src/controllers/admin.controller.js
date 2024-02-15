@@ -73,22 +73,15 @@ export class AdminController {
   /* 유저 전체 조회 */
   findAllUsers = async (req, res, next) => {
     try {
-      let countPerPage = parseInt(req.query.countPerPage, 10) || 10;
-      let pageNo = parseInt(req.query.pageNo, 10) || 1;
+      const countPerPage = parseInt(req.query.countPerPage, 10) || 10;
+      const pageNo = parseInt(req.query.pageNo, 10) || 1;
 
-      //db에서 사용자 목록 가져옴
-      const allUsers = await this.adminService.findAllUsers();
-      const totalCount = allUsers.length;
-
-      // 페이지네이션 로직
-      const startItemNo = (pageNo - 1) * countPerPage;
-      let endItemNo = pageNo * countPerPage - 1;
-
-      // 페이지네이션을 적용하여 해당 페이지에 맞는 사용자 목록을 선별합니다.
-      const paginatedUsers = allUsers.slice(
-        startItemNo,
-        startItemNo + countPerPage,
+      // 페이지네이션된 사용자 목록과 전체 사용자 수를 가져옵니다.
+      const paginatedUsers = await this.adminService.readSomeUsers(
+        pageNo,
+        countPerPage,
       );
+      const totalCount = await this.adminService.getTotalUserCount();
 
       // 선별된 사용자 목록을 JSON으로 반환합니다.
       return res.status(200).json({
@@ -106,16 +99,6 @@ export class AdminController {
       next(err);
     }
   };
-
-  // 위의 코드 수정 사항은 다음과 같습니다:
-
-  // - `boardList` 대신에 `allUsers`를 사용, `this.adminService.findAllUsers()` 함수로부터 모든 사용자를 비동기로 가져옵니다.
-  // - `parseInt`의 두 번째 인자인 기수(radix)를 10으로 지정하여 항상 10진수로 파싱되도록 강제합니다.
-  // - `pageNo`의 기본값을 0 대신 1로 설정합니다. 보통 페이지네이션은 1부터 시작합니다.
-  // - 마지막 페이지의 `endItemNo` 계산은 불필요하며, `slice` 함수에 의해 처리되므로 제거합니다.
-  // - 페이지 정보를 포함하는 `pageInfo` 객체를 응답에 추가하여 사용자가 현재 페이지와 관련 정보를 알 수 있도록 합니다.
-
-  // 이렇게 수정하면, `boardList`의 정의와 데이터 소스가 명확해지고, 요청된 페이지에 맞는 데이터를 잘라내서 반환하는 페이지네이션 기능을 제대로 구현할 수 있습니다.
 
   /* 유저 필터링 후 조회 */
   filterUsers = async (req, res, next) => {

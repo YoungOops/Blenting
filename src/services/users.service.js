@@ -14,6 +14,10 @@ export class UsersService {
     };
   };
 
+  readOne = async (userId) => {
+    return await this.usersRepository.readOne(userId);
+  };
+
   findUserById = async (userId) => {
     return await this.usersRepository.readOneById(userId);
   };
