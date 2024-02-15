@@ -40,7 +40,9 @@ function fetchUserProfile(userId) {
       document.getElementById('userMbti').innerText = data.mbti;
       document.getElementById('userRole').innerText = data.role;
       document.getElementById('userDistrict').innerText = data.district;
+      console.log('🚀 ~ .then ~ data.district:', data.district);
       document.getElementById('userDescription').innerText = data.description;
+      console.log('🚀 ~ .then ~ data.description:', data.description);
       document.getElementById('userHobby').innerText = data.hobby;
       document.getElementById('userJob').innerText = data.job;
       document.getElementById('userAge').innerText = data.age;
