@@ -177,7 +177,7 @@ profileSubmit.addEventListener('click', async (event) => {
     userWant3 = 'FIGURE';
   }
   if (wantCheckHobby3.checked) {
-    userWant3 = 'Hobby';
+    userWant3 = 'HOBBY';
   }
   if (wantCheckJob3.checked) {
     userWant3 = 'JOB';

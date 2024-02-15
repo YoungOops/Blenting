@@ -8,6 +8,12 @@ if (meetingType === 'couple') {
   coupleSocket = getSocket(meetingType, roomId);
 }
 
+// 뒤로가기 클릭 시 다시 미팅방 접속 방지
+window.history.pushState(null, null, window.location.href);
+      window.onpopstate = function (event) {
+        window.history.go(1);
+      };
+
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
 const input = document.getElementById('input');
