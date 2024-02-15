@@ -4,9 +4,11 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { prisma } from '../utils/prisma/index.js';
 import { MeetingsRepository } from '../repositories/meetings.repository.js';
+import { UsersService } from '../services/users.service.js';
 dotenv.config();
 
 const meetingsRepository = new MeetingsRepository();
+const usersService = new UsersService();
 
 // 투표 한 인원 저장
 let voteUsers = new Map();
@@ -120,12 +122,12 @@ export const handleVoteEvent = async (io, socket) => {
 
             const fromUser = await prisma.users.findUnique({
                 where: { id: userId },
-                select: { id: true, nickName: true, gender: true }
+                select: { id: true, nickName: true, gender: true, ticket: true }
             })
 
             const toUser = await prisma.users.findUnique({
                 where: { id: +data.option },
-                select: { id: true, nickName: true, gender: true }
+                select: { id: true, nickName: true, gender: true, ticket: true }
             })
 
 
@@ -155,15 +157,26 @@ export const handleVoteEvent = async (io, socket) => {
                 console.log('fromSocketId, toSocketId 확인', fromSocketId, toSocketId);
                 console.log('------------------------------------');
 
-                // 소개팅 방 생성 
-                const couple = await meetingsRepository.createMeeting('COUPLE');
-                const coupleId = couple.id
+                // 소개팅 방 입장을 위한 티켓 소모
+                const fromPostConsumptionTicket = await usersService.ticketConsumption(fromUser.id, fromUser.ticket);
+                const toPostConsumptionTicket = await usersService.ticketConsumption(toUser.id, toUser.ticket);
 
-                io.to(meetingId).emit('announce', { fromUser, toUser, coupleId, fromSocketId, toSocketId });
+                // 둘 다 티켓 소모가 완료 시
+                if (fromPostConsumptionTicket && toPostConsumptionTicket) {
 
-                // 해당 meetingId에서 지목한 유저들 삭제
-                voteUsers.set(meetingId, usersInRoom.filter(user => user.toUserId !== fromUser.id && user.toUserId !== toUser.id));
-                console.log("voteUsersInRoom 확인 ", voteUsers.get(meetingId));
+                    // 소개팅 방 생성 
+                    const couple = await meetingsRepository.createMeeting('COUPLE');
+                    const coupleId = couple.id
+
+                    io.to(meetingId).emit('announce', { fromUser, toUser, coupleId, fromSocketId, toSocketId });
+
+                    // 해당 meetingId에서 지목한 유저들 삭제
+                    voteUsers.set(meetingId, usersInRoom.filter(user => user.toUserId !== fromUser.id && user.toUserId !== toUser.id));
+                    console.log("voteUsersInRoom 확인 ", voteUsers.get(meetingId));
+
+                } else {
+                    throw new Error("티켓 소모 에러");
+                }
             }
 
             // 서버에서 클라이언트로 발송
