@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       data.nickName + '님의 마이페이지 입니다.';
 
     // 사용자 정보를 DOM에 표시
-    document.getElementById('userId').innerText = data.id;
+    // document.getElementById('userId').innerText = data.id;
     document.getElementById('userEmail').innerText = data.Auths.email;
     document.getElementById('userNickName').innerText = data.nickName;
     document.getElementById('userGender').innerText = data.gender;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('userWant2').innerText = data.want2;
     document.getElementById('userWant3').innerText = data.want3;
     document.getElementById('userMbti').innerText = data.mbti;
-    document.getElementById('userRole').innerText = data.role;
+    // document.getElementById('userRole').innerText = data.role;
     document.getElementById('userDistrict').innerText = data.district;
     document.getElementById('userDescription').innerText = data.description;
     document.getElementById('userHobby').innerText = data.hobby;
