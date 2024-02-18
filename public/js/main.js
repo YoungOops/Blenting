@@ -34,14 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
     paymentButton.style.display = 'block';
     matchingButton.style.display = 'block';
     matchingButton.style.display = 'block';
-    myPageButton.style.display = 'block';
   } else {
     signupButton.style.display = 'block';
     signinButton.style.display = 'block';
     signoutButton.style.display = 'none';
     paymentButton.style.display = 'none';
     matchingButton.style.display = 'none';
-    myPageButton.style.display = 'none';
   }
 });
 

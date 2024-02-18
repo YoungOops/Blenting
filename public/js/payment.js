@@ -54,6 +54,9 @@ function paymentList(data) {
         </div>
       </span>
       `;
+    packageContent.addEventListener('click', () => {
+      buySubmit(packages.id);
+    });
     paymentContents.append(packageContent);
   });
 }
