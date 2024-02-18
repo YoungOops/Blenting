@@ -248,9 +248,9 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     console.log("voted 확인", vote);
     const item = document.createElement('li');
 
-    item.textContent = `${vote.fromUser.nickName} 와 ${vote.toUser.nickName}가 서로 지목했습니다!`
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
+    // item.textContent = `${vote.fromUser.nickName} 와 ${vote.toUser.nickName}가 서로 지목했습니다!`
+    // messages.appendChild(item);
+    // messages.scrollTop = messages.scrollHeight;
 
     // 서로 투표한 인원들 소개팅 방으로 이동
     if (meetingSocket.id === vote.fromSocketId || meetingSocket.id === vote.toSocketId) {
