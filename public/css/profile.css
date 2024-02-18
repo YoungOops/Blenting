@@ -57,11 +57,13 @@
 
 .checkboxAlign {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 }
 
 .submitPlace {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row-reverse;
   margin-top: 10px;
   grid-column-start: 1;
