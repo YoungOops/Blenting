@@ -36,15 +36,5 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         messages.appendChild(item);
         messages.scrollTop = messages.scrollHeight;
     });
-
-
-    // meetingSocket.on('announce', (vote) => {
-    //     console.log("voted 확인", vote);
-    //     const item = document.createElement('li');
-
-    //     item.textContent = `${vote.fromUserNickName} 와 ${vote.toUserNickName}가 서로 지목했습니다!`
-    //     messages.appendChild(item);
-    //     messages.scrollTop = messages.scrollHeight;
-    // })
 }
 
