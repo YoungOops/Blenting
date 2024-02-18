@@ -7,8 +7,6 @@ const matchingButton = document.getElementById('match');
 const signoutButton = document.getElementById('signout');
 const paymentButton = document.getElementById('payment');
 
-const myPageButton = document.getElementById('myPage');
-
 const accessToken = localStorage.getItem('accessToken');
 
 signupButton.addEventListener('click', () => {
@@ -26,10 +24,6 @@ signoutButton.addEventListener('click', () => {
 
 paymentButton.addEventListener('click', () => {
   window.location.href = '/payment.html';
-});
-
-myPageButton.addEventListener('click', () => {
-  window.location.href = '/myPage.html';
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -59,14 +53,12 @@ matchingButton.addEventListener('click', async () => {
 
   // 티켓이 없을 시 입장 불가
   const token = localStorage.getItem('accessToken');
-  const response = await fetch(`api/user/profile`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    }
-  )
+  const response = await fetch(`api/user/profile`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   if (!response.ok) {
     throw new Error(`HTTP error status: ${response.status}`);
@@ -74,17 +66,11 @@ matchingButton.addEventListener('click', async () => {
 
   const userInfo = await response.json();
 
-  console.log("userInfo 확인", userInfo)
+  console.log('userInfo 확인', userInfo);
 
   if (userInfo.ticket === 0) {
-
-    alert("티켓이 없습니다");
-
+    alert('티켓이 없습니다');
   } else {
-
     ClickMatchingButton('GROUP');
- 
   }
-
-
 });

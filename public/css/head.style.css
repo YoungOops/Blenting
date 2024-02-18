@@ -10,6 +10,21 @@
   justify-content: space-between;
 }
 
+body {
+  margin: 0;
+  background-color: lightgray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.body-box {
+  background-color: white;
+  width: 90%;
+  max-width: 540px;
+  padding-bottom: 150px;
+}
+
 .main-btn {
   display: flex;
   align-items: center;

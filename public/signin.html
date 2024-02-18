@@ -4,35 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./css/signin.css" />
+    <link rel="stylesheet" type="text/css" href="./css/head.style.css" />
     <title>Sign in</title>
   </head>
   <body>
-    <div class="signinBox">
-      <div class="signinDataBox">
-        <div class="signinDataField">E-mall</div>
-        <input
-          type="text"
-          name="email"
-          id="emailField"
-          class="signinData"
-          placeholder="example@email.com"
-        />
-        <div class="signinDataField">Password</div>
-        <input
-          type="password"
-          name="password"
-          id="passwordField"
-          class="signinData"
-          placeholder="password"
-        />
+    <div class="body-box">
+      <div class="head-box">
+        <div id="main-btn" class="main-btn">
+          <img src="./img/icon.jpg" alt="" class="icon" />
+          <span class="logo">Blenting</span>
+        </div>
+        <img src="./img/profile.jpg" alt="" class="profile-img" />
       </div>
-      <div class="submitPlace">
-        <button type="submit" id="signinSubmit" class="signinSubmit">
-          signin
-        </button>
+      <div class="signinBox">
+        <div class="signinDataBox">
+          <div class="signinDataField">E-mall</div>
+          <input
+            type="text"
+            name="email"
+            id="emailField"
+            class="signinData"
+            placeholder="example@email.com"
+          />
+          <div class="signinDataField">Password</div>
+          <input
+            type="password"
+            name="password"
+            id="passwordField"
+            class="signinData"
+            placeholder="password"
+          />
+        </div>
+        <div class="submitPlace">
+          <button type="submit" id="signinSubmit" class="signinSubmit">
+            signin
+          </button>
+        </div>
       </div>
+      <script src="./js/constants.js"></script>
+      <script src="./js/head.js"></script>
+      <script type="text/javascript" src="./js/signin.js"></script>
     </div>
-    <script src="./js/constants.js"></script>
-    <script type="text/javascript" src="./js/signin.js"></script>
   </body>
 </html>

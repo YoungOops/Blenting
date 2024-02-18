@@ -40,16 +40,20 @@ function paymentList(data) {
 
   data.forEach((packages) => {
     const packageContent = document.createElement('div');
-    packageContent.setAttribute('onclick', `buySubmit(${packages.id})`);
-    packageContent.style =
-      'display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; font-family: sans-serif; font-size: medium; font-weight: 700; outline-color: #e6a4b4; outline-style: solid; margin-top: 20px; margin-bottom: 20px; margin-left: 20%; margin-right: 20%; width: 60%; aspect-ratio: 162/100; min-width: 162px; min-height: 100px; border-radius: 15px; background-color: #fff8e3; border: none; cursor: pointer';
+    packageContent.classList.add('custom-btn');
+    packageContent.classList.add('btn');
     packageContent.innerHTML = `
-        <div>${packages.packageName} 패키지</div>
-        <div>티켓 ${packages.ticketCount}장</div>
-        <div>
-            <span style="text-decoration: line-through; color: gray">${packages.price}&#8361</span>
-            <span> -> 0&#8361</span>
-        </div>`;
+      <span>
+        <div class="ticket-btn">
+          <img style="display: inline;" src="./img/ticket${packages.ticketCount}.jpg" alt="" class="ticket-img" />
+          <div style="display: inline;"> 티켓 ${packages.ticketCount}장 </div>
+          <div style="display: inline;">
+            <div style="display: inline; text-decoration: line-through; color: gray">${packages.price}&#8361</div>
+            -> 0&#8361
+          </div>
+        </div>
+      </span>
+      `;
     paymentContents.append(packageContent);
   });
 }
