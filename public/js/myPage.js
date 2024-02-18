@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const data = await response.json();
 
-    document.getElementById('detail').innerText =
-      data.nickName + '님의 마이페이지 입니다.';
+    // document.getElementById('detail').innerText =
+    //   data.nickName + '님의 마이페이지 입니다.';
 
     // 사용자 정보를 DOM에 표시
     // document.getElementById('userId').innerText = data.id;
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('userJob').innerText = data.job;
     document.getElementById('userAge').innerText = data.age;
     document.getElementById('userTicket').innerText = data.ticket;
-    document.getElementById('userCreatedAt').innerText = data.createdAt;
+    //document.getElementById('userCreatedAt').innerText = data.createdAt;
   } catch (error) {
     console.error('Error fetching user profile:', error);
   }

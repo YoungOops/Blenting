@@ -4,62 +4,78 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./css/signup.css" />
+    <link rel="stylesheet" type="text/css" href="./css/head.style.css" />
     <title>Sign up</title>
   </head>
   <body>
-    <div class="signupBox">
-      <div class="signupDataBox">
-        <div class="signupDataField">E-mall</div>
-        <input
-          type="text"
-          name="email"
-          id="emailField"
-          class="signupData"
-          placeholder="example@email.com"
-        />
-        <div class="signupDataField">Password</div>
-        <input
-          type="password"
-          name="password"
-          id="passwordField"
-          class="signupData"
-          placeholder="password"
-        />
-        <div class="signupDataField">Check Password</div>
-        <input
-          type="password"
-          name="chackPassword"
-          id="passwordCheckField"
-          class="signupData"
-          placeholder="check password"
-        />
-        <div class="signupDataField">Nickname</div>
-        <input
-          type="text"
-          name="nickName"
-          id="nickNameField"
-          class="signupData"
-          placeholder="nickname"
-        />
-        <div class="signupDataField">Gender</div>
-        <div class="signupDataChoice">
-          <div class="checkboxAlign">
-            <input type="radio" name="gender" id="maleCheck" value="MALE" />
-            <div class="checkboxData">MALE</div>
-          </div>
-          <div class="checkboxAlign">
-            <input type="radio" name="gender" id="femaleCheck" value="FEMALE" />
-            <div class="checkboxData">FEMALE</div>
+    <div class="body-box">
+      <div class="head-box">
+        <div id="main-btn" class="main-btn">
+          <img src="./img/icon.jpg" alt="" class="icon" />
+          <span class="logo">Blenting</span>
+        </div>
+        <img src="./img/profile.jpg" alt="" class="profile-img" />
+      </div>
+      <div class="signupBox">
+        <div class="signupDataBox">
+          <div class="signupDataField">E-mall</div>
+          <input
+            type="text"
+            name="email"
+            id="emailField"
+            class="signupData"
+            placeholder="example@email.com"
+          />
+          <div class="signupDataField">Password</div>
+          <input
+            type="password"
+            name="password"
+            id="passwordField"
+            class="signupData"
+            placeholder="password"
+          />
+          <div class="signupDataField">Check Password</div>
+          <input
+            type="password"
+            name="chackPassword"
+            id="passwordCheckField"
+            class="signupData"
+            placeholder="check password"
+          />
+          <div class="signupDataField">Nickname</div>
+          <input
+            type="text"
+            name="nickName"
+            id="nickNameField"
+            class="signupData"
+            placeholder="nickname"
+          />
+          <div class="signupDataField">Gender</div>
+          <div class="signupDataChoice">
+            <div class="checkboxAlign">
+              <input type="radio" name="gender" id="maleCheck" value="MALE" />
+              <div class="checkboxData">MALE</div>
+            </div>
+            <div class="checkboxAlign">
+              <input
+                type="radio"
+                name="gender"
+                id="femaleCheck"
+                value="FEMALE"
+              />
+              <div class="checkboxData">FEMALE</div>
+            </div>
           </div>
         </div>
+        <div class="submitPlace">
+          <button type="submit" id="signupSubmit" class="signupSubmit">
+            signup
+          </button>
+        </div>
       </div>
-      <div class="submitPlace">
-        <button type="submit" id="signupSubmit" class="signupSubmit">
-          signup
-        </button>
-      </div>
+      <script src="./js/constants.js"></script>
+      <script src="./js/head.js"></script>
+      <script type="text/javascript" src="./js/signup.js"></script>
     </div>
-    <script src="./js/constants.js"></script>
-    <script type="text/javascript" src="./js/signup.js"></script>
   </body>
 </html>

@@ -1,17 +1,3 @@
-body {
-  background-color: lightgray;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.body-box {
-  background-color: white;
-  width: 90%;
-  max-width: 540px;
-  padding-bottom: 150px;
-}
-
 button {
   margin-top: 20px;
   margin-bottom: 20px;

@@ -1,6 +1,110 @@
-body {
-  max-width: 540px;
+.custom-btn {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 20%;
+  margin-right: 20%;
+  width: 60%;
+  color: #fff;
+  text-shadow: -1px 0px 2px rgba(231, 136, 149, 1),
+    0px 1px 2px rgba(231, 136, 149, 1), 1px 0px 2px rgba(231, 136, 149, 1),
+    0px -1px 2px rgba(231, 136, 149, 1);
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 800;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1), 4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.btn {
+  background: rgb(255, 248, 227);
+  background: linear-gradient(
+    0deg,
+    rgba(255, 248, 227, 1) 0%,
+    rgba(230, 164, 180, 1) 100%
+  );
+  width: 60%;
+  line-height: 42px;
+  padding: 0;
+  border: none;
+}
+.btn span {
+  margin: auto;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.btn:before,
+.btn:after {
+  position: absolute;
+  content: '';
+  right: 0;
+  top: 0;
+  background: rgba(230, 164, 180, 1);
+  transition: all 0.3s ease;
+}
+.btn:before {
+  height: 0%;
+  width: 2px;
+}
+.btn:after {
+  width: 0%;
+  height: 2px;
+}
+.btn:hover {
+  background: transparent;
+  box-shadow: none;
+}
+.btn:hover:before {
+  height: 100%;
+}
+.btn:hover:after {
+  width: 100%;
+}
+.btn span:hover {
+  color: rgba(230, 164, 180, 1);
+  text-shadow: -1px 0px #fff, 0px 1px #fff, 1px 0px #fff, 0px -1px #fff;
+}
+.btn span:before,
+.btn span:after {
+  position: absolute;
+  content: '';
+  left: 0;
+  bottom: 0;
+  background: rgba(230, 164, 180, 1);
+  transition: all 0.3s ease;
+}
+.btn span:before {
+  width: 2px;
+  height: 0%;
+}
+.btn span:after {
+  width: 0%;
+  height: 2px;
+}
+.btn span:hover:before {
+  height: 100%;
+}
+.btn span:hover:after {
+  width: 100%;
+}
+
+.ticket-img {
+  width: 25%;
+  aspect-ratio: 5/4;
+  border-radius: 20%;
+}
+
+.ticket-btn {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  padding: 5%;
 }
