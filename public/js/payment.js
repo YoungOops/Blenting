@@ -10,7 +10,7 @@ function packages() {
     return;
   }
 
-  fetch(server + '/api/payment/packageList', {
+  fetch('/api/payment/packageList', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ function buySubmit(packageId) {
       packageId: packageId,
     }),
   );
-  fetch(server + '/api/payment/buyPackage', {
+  fetch('/api/payment/buyPackage', {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',

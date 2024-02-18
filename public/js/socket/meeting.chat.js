@@ -238,7 +238,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     // 서로 지목을 했을 때 결과를 저장하고 나타내줄 수 있는 모델을 만들고 표시 할 수 있게
 
     const item = document.createElement('li');
-    item.textContent = `${vote.fromUserNickName} 가 ${vote.toUserNickName}을 투표`;
+    item.textContent = `${vote.fromUserNickName}님이 투표했습니다`;
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
   });
@@ -248,9 +248,9 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     console.log("voted 확인", vote);
     const item = document.createElement('li');
 
-    item.textContent = `${vote.fromUser.nickName} 와 ${vote.toUser.nickName}가 서로 지목했습니다!`
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
+    // item.textContent = `${vote.fromUser.nickName} 와 ${vote.toUser.nickName}가 서로 지목했습니다!`
+    // messages.appendChild(item);
+    // messages.scrollTop = messages.scrollHeight;
 
     // 서로 투표한 인원들 소개팅 방으로 이동
     if (meetingSocket.id === vote.fromSocketId || meetingSocket.id === vote.toSocketId) {

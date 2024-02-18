@@ -112,9 +112,8 @@ export class AdminController {
         want2,
         want3,
         mbti,
-        // reportCount,
-        // reportPoint,
-        // ticket,
+        // reportCount,(미구현)
+        // reportPoint,(미구현)
       } = req.query;
 
       // 필터링할 조건들을 객체로 구성합니다. 값이 존재하는 경우에만 필터 옵션에 추가합니다.
@@ -126,25 +125,17 @@ export class AdminController {
         ...(want2 && { want2 }), // want1 파라미터가 있으면 want1로 필터링
         ...(want3 && { want3 }), // want1 파라미터가 있으면 want1로 필터링
         ...(mbti && { mbti }), // want1 파라미터가 있으면 want1로 필터링
-
-        /** reportCount, reportPoint, ticket은 숫자여야 하므로 정수로 변환 */
-        // ...(reportCount && { reportCount: parseInt(reportCount) }),
-        // ...(reportPoint && { reportPoint: parseInt(reportPoint) }),
-        // ...(ticket && { ticket: parseInt(ticket) }),
       };
 
       // 서비스 계층의 findAllUsers 메소드를 호출하고 필터 옵션을 전달합니다.
-      // 반환된 유저 데이터는 필터링된 결과를 포함합니다.
       const users = await this.adminService.filterUsers(filterOptions);
 
-      // 필터링된 유저 데이터를 HTTP 응답으로 클라이언트에 반환합니다.
-      // 상태 코드 200은 요청이 성공적으로 처리되었음을 나타냅니다.
       return res.status(200).json(users);
     } catch (err) {
-      // 에러가 발생한 경우 에러 핸들링 미들웨어로 에러를 전달합니다.
       next(err);
     }
   };
+
   /* 유저 상세 조회 */
   findProfile = async (req, res, next) => {
     try {
