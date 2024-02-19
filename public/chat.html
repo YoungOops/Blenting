@@ -31,16 +31,6 @@
           <div id="chat-messages">
             <!-- messages list will be added here dynamically -->
           </div>
-          <form id="form" action="">
-            <select
-              id="select-vote-list"
-              class="form-select"
-              aria-label="Default select example"
-            >
-              <option selected>지목하기</option>
-            </select>
-            <input id="input" autocomplete="off" /><button>Send</button>
-          </form>
         </div>
         <div id="user-list-container">
           <div id="user-list-top">
@@ -52,6 +42,16 @@
             </ul>
           </div>
         </div>
+        <form id="form" action="">
+          <select
+            id="select-vote-list"
+            class="form-select"
+            aria-label="Default select example"
+          >
+            <option selected>지목하기</option>
+          </select>
+          <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
       </div>
       <!-- 얘네 socket.io 바로 밑에 놓으면 안 됩니다. 소켓이 먼저 로드 되기전에 얘네가 비동기적으로 먼저 실행되나봄 -->
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
