@@ -10,13 +10,8 @@
 }
 
 .signinBox {
-  margin-top: 25px;
-  margin-bottom: 25px;
-  margin-left: 5%;
-  margin-right: 5%;
   padding: 25px;
   width: 80%;
-  height: auto;
   border-radius: 15px;
   background-color: #fff8e3;
   border: solid 2px #e6a4b4;

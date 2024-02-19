@@ -1,13 +1,16 @@
 .head-box {
   background-color: white;
   width: 90%;
-  max-width: 540px;
   border-style: none none solid;
-  margin: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
   padding-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 4vh;
 }
 
 body {
@@ -16,13 +19,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif; /* 폰트 패밀리 설정 */
 }
 
 .body-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: white;
   width: 90%;
-  max-width: 540px;
-  padding-bottom: 150px;
+  height: 100vh;
 }
 
 .main-btn {
