@@ -12,8 +12,6 @@ if (meetingType === 'meeting') {
   meetingSocket = getSocket(meetingType, roomId);
 }
 
-
-
 /** HTML 문서에서 form, input, messages, userList 요소를 찾아 변수에 할당합니다. */
 const form = document.getElementById('form');
 const input = document.getElementById('input');
@@ -51,7 +49,6 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     console.log('서버응답확인 ', response.headers);
 
     me = await response.json();
-
   });
 
   /** form 요소에 'submit' 이벤트 리스너를 추가합니다.
@@ -104,7 +101,6 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
           userList.appendChild(user); // 'li' 요소를 userList에 추가합니다.
         });
 
-
         // 투표 목록
         // 채팅 참가 시 지목하기 select에 option 추가
         select.innerHTML = '';
@@ -118,11 +114,9 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
         // if(meetingSocket.id === data.socketId){
         // }
 
-
         // 나의 성별을 가지고 투표 목록 가공
         data.users.forEach((e) => {
-
-          console.log("vote e 확인", e)
+          console.log('vote e 확인', e);
 
           if (me.gender !== e.gender) {
             const option = document.createElement('option');
@@ -130,8 +124,7 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
             option.value = e.id;
             select.append(option);
           }
-        })
-
+        });
       }
     } catch (error) {
       console.error('entry 에러', error);
@@ -168,16 +161,13 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
       select.append(defaultOption);
 
       data.users.forEach((e) => {
-
         if (me.gender !== e.gender) {
           const option = document.createElement('option');
           option.textContent = e.nickName;
           option.value = e.id;
           select.append(option);
         }
-
-      })
-
+      });
     } catch (error) {
       console.error('exit 에러 ', error);
     }
@@ -191,17 +181,14 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
 
       // 자신의 메세지는 오른쪽에서 생성
       if (meetingSocket.id === msg.socketId) {
-
         item.style.textAlign = 'right';
-
       }
 
       item.innerHTML = `<div class="messageUserName">${msg.socketUser}</div><span class="messageText">${msg.message}</span>`;
 
       // 자신일 경우 메세지 박스 배경을 노랗게 설정
       if (meetingSocket.id === msg.socketId) {
-
-        item.querySelector('.messageText').style.backgroundColor = 'yellow';
+        item.querySelector('.messageText').style.backgroundColor = '#fff8e3';
       }
 
       // item.textContent = `${msg.socketUser}${msg.message}`; // 메시지 내용을 'li' 요소의 텍스트로 설정합니다.
@@ -225,16 +212,17 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     e.preventDefault();
 
     if (select.value) {
-
       // 클라이언트에서 서버로 이벤트 발송
-      meetingSocket.emit('vote', { option: select.value, voteUserSocketId: meetingSocket.id });
+      meetingSocket.emit('vote', {
+        option: select.value,
+        voteUserSocketId: meetingSocket.id,
+      });
       select.selectedIndex = 0;
     }
-  })
+  });
 
   // 서버에서 온 이벤트 접수
   meetingSocket.on('vote', (vote) => {
-
     // 서로 지목을 했을 때 결과를 저장하고 나타내줄 수 있는 모델을 만들고 표시 할 수 있게
 
     const item = document.createElement('li');
@@ -243,9 +231,8 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     messages.scrollTop = messages.scrollHeight;
   });
 
-
   meetingSocket.on('announce', (vote) => {
-    console.log("voted 확인", vote);
+    console.log('voted 확인', vote);
     const item = document.createElement('li');
 
     // item.textContent = `${vote.fromUser.nickName} 와 ${vote.toUser.nickName}가 서로 지목했습니다!`
@@ -253,11 +240,12 @@ if (!meetingSocket || typeof meetingSocket.on !== 'function') {
     // messages.scrollTop = messages.scrollHeight;
 
     // 서로 투표한 인원들 소개팅 방으로 이동
-    if (meetingSocket.id === vote.fromSocketId || meetingSocket.id === vote.toSocketId) {
-
-      const roomId = vote.coupleId
+    if (
+      meetingSocket.id === vote.fromSocketId ||
+      meetingSocket.id === vote.toSocketId
+    ) {
+      const roomId = vote.coupleId;
       window.location.href = `/couple?meetingType=couple&roomId=${roomId}`;
-
     }
-  })
+  });
 }
